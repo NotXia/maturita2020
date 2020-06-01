@@ -6,4 +6,11 @@
 .admin_nav_logo {
    width: 25px;
    margin-bottom: 5px;
+   margin-right: 5px;
+}
+
+.user_nav_logo {
+   width: 30px;
+   margin-bottom: 5px;
+   margin-right: 5px;
 }

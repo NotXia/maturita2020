@@ -13,6 +13,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <link rel="stylesheet" href="./css/bootstrap.min.css">
+      <link rel="stylesheet" href="./css/navbar.css">
 
       <title></title>
    </head>
@@ -20,7 +21,12 @@
    <body class="text-center">
 
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-         <a class="navbar-brand" href="index.php">TechnoLab</a>
+         <div class="navbar-brand">
+            <a class="navbar-brand" href="index.php">
+               <img class="navbar-brand user_nav_logo" src="./img/hospital.png">
+               TechnoLab
+            </a>
+         </div>
       </nav>
 
    </body>
