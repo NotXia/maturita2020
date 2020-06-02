@@ -216,6 +216,10 @@
 
          $('#modify').modal('show');
       });
+
+      $(document).on('hidden.bs.modal', function () {
+         $(this).find('form').trigger('reset');
+      })
    </script>
 
 </html>

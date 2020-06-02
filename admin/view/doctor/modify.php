@@ -115,10 +115,12 @@
 
             $conn->commit();
 
+            header("Location: index.php");
+
             ?>
-               <script type="text/javascript">
+               <!-- <script type="text/javascript">
                   window.history.back();
-               </script>
+               </script> -->
             <?php
          } catch (PDOException $e) {
             $conn->rollBack();

@@ -96,10 +96,12 @@
                exit;
             }
 
+            header("Location: index.php");
+
             ?>
-               <script type="text/javascript">
+               <!-- <script type="text/javascript">
                   window.history.back();
-               </script>
+               </script> -->
             <?php
          } catch (PDOException $e) {
             die("<p class='error'>Si è verificato un errore nell'aggiornamento</p>");
