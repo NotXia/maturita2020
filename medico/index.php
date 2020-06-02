@@ -33,8 +33,17 @@
       <nav class="navbar navbar-expand-sm navbar-light bg-light">
          <div class="navbar-brand">
             <a class="navbar-brand" href="index.php">
-               <img class="navbar-brand admin_nav_logo" src="../img/hospital.png">
-               <?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?>
+               <table>
+                  <tr>
+                     <td class="align-middle">
+                        <img class="navbar-brand user_nav_logo" src="../img/hospital.png">
+                     </td>
+                     <td>
+                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?></h5>
+                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h6>
+                     </td>
+                  </tr>
+               </table>
             </a>
          </div>
 
@@ -53,14 +62,11 @@
          </div>
       </nav>
 
-      <div style="padding-right:20px;padding-top:20px;" class="text-right">
-         <h5 style="text-transform: uppercase;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h5>
-      </div>
 
       <div class="container">
          <div class="row text-black">
 
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mx-auto text-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mx-auto text-center p-4">
                <h1 class="display-4 py-2">Dashboard</h1>
             </div>
 
