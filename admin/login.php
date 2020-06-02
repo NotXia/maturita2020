@@ -6,6 +6,10 @@
       header("Location: index.php");
       exit;
    }
+   else if(logged()) {
+      header("Location: ../index.php");
+      exit;
+   }
 
    require_once(dirname(__FILE__)."/../utilities/database.php");
 ?>
@@ -59,6 +63,7 @@
                   <input name="submit" type="submit" value="Accedi" class="btn btn-light">
 
                </form>
+               <br>
 
                <?php
                   if(isset($_POST["submit"])) {
@@ -83,7 +88,7 @@
                         $res = $stmt->fetch();
 
                         if(empty($res)) {
-                           die("<br><span class='error'>Utenza non esistente</span>");
+                           die("<span class='error'>Utenza non esistente</span>");
                         }
 
                         if(password_verify($_POST["password"], $res["psw"])) {
@@ -94,11 +99,11 @@
                            header("Location: index.php");
                         }
                         else {
-                           die("<br><span class='error'>Credenziali errate</span>");
+                           die("<span class='error'>Credenziali errate</span>");
                         }
 
                      } catch (PDOException $e) {
-                        die("<br><span class='error'>Qualcosa non ha funzionato</span>");
+                        die("<span class='error'>Qualcosa non ha funzionato</span>");
                      }
 
                   }

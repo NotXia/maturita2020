@@ -1,4 +1,6 @@
 <?php
+   session_start();
+
    require_once(dirname(__FILE__)."/utilities/login_check.php");
    if(!logged()) {
       header("Location: login.php");
@@ -28,6 +30,14 @@
             </a>
          </div>
       </nav>
+
+      <?php
+
+      foreach($_SESSION["reparti"] as $id_rep) {
+         echo $id_rep . "<br>";
+      }
+
+      ?>
 
    </body>
 
