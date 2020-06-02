@@ -72,11 +72,12 @@
 
             // Aggiornamento anagrafica medico
             $sql = "UPDATE medici
-                    SET nome = :nome, cognome = :cognome
+                    SET nome = :nome, cognome = :cognome, cod_reparto = :cod_reparto
                     WHERE id = :id";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":nome", $_POST["nome"], PDO::PARAM_STR, 100);
             $stmt->bindParam(":cognome", $_POST["cognome"], PDO::PARAM_STR, 100);
+            $stmt->bindParam(":cod_reparto", $_POST["reparto"], PDO::PARAM_INT);
             $stmt->bindParam(":id", $_POST["id"], PDO::PARAM_INT);
             $stmt->execute();
 
@@ -109,22 +110,6 @@
                $stmt->bindParam(":username", $_POST["username"], PDO::PARAM_STR, 100);
                $stmt->bindParam(":password", $psw_hash, PDO::PARAM_STR, 60);
                $stmt->bindParam(":id", $id_utenza, PDO::PARAM_INT);
-               $stmt->execute();
-            }
-
-            // Eliminazione specializzazioni medico
-            $sql = "DELETE FROM specializzazioni
-                    WHERE cod_medico = :id";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(":id", $_POST["id"], PDO::PARAM_INT);
-            $stmt->execute();
-
-            // Inserimento specializzazioni medico
-            foreach($_POST["reparto"] as $key=>$id_reparto) {
-               $sql = "INSERT specializzazioni (cod_medico, cod_reparto) VALUES(:cod_medico, :cod_reparto)";
-               $stmt = $conn->prepare($sql);
-               $stmt->bindParam(":cod_medico", $_POST["id"], PDO::PARAM_INT);
-               $stmt->bindParam(":cod_reparto", $id_reparto, PDO::PARAM_INT);
                $stmt->execute();
             }
 

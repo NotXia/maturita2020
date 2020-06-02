@@ -10,26 +10,20 @@ CREATE TABLE utenze (
    admin BOOLEAN NOT NULL DEFAULT(0)
 );
 
-CREATE TABLE medici (
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   nome VARCHAR(100) NOT NULL,
-   cognome VARCHAR(100) NOT NULL,
-   cod_utenza INT NOT NULL,
-   FOREIGN KEY (cod_utenza) REFERENCES utenze(id) ON DELETE RESTRICT ON UPDATE RESTRICT
-);
-
 CREATE TABLE reparti (
    id INT AUTO_INCREMENT PRIMARY KEY,
    denominazione VARCHAR(100) NOT NULL
 );
 INSERT reparti VALUES(null, "Farmacia");
 
-CREATE TABLE specializzazioni (
+CREATE TABLE medici (
    id INT AUTO_INCREMENT PRIMARY KEY,
-   cod_medico INT NOT NULL,
+   nome VARCHAR(100) NOT NULL,
+   cognome VARCHAR(100) NOT NULL,
    cod_reparto INT NOT NULL,
-   FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE CASCADE ON UPDATE CASCADE,
-   FOREIGN KEY (cod_reparto) REFERENCES reparti(id) ON DELETE CASCADE ON UPDATE CASCADE
+   cod_utenza INT NOT NULL,
+   FOREIGN KEY (cod_utenza) REFERENCES utenze(id) ON DELETE RESTRICT ON UPDATE CASCADE
+   FOREIGN KEY (cod_reparto) REFERENCES reparti(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE pazienti (
@@ -37,8 +31,10 @@ CREATE TABLE pazienti (
    nome VARCHAR(100) NOT NULL,
    cognome VARCHAR(100) NOT NULL,
    ddn DATE NOT NULL,
+   sesso CHAR(1) NOT NULL,
    email VARCHAR(100) NOT NULL,
-   telefono VARCHAR(20) NOT NULL
+   telefono VARCHAR(20) NOT NULL,
+   CHECK(sesso='M' OR sesso='F')
 );
 
 CREATE TABLE farmaci (

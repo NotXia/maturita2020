@@ -75,9 +75,10 @@
                         $conn = connect();
 
                         // Estrae i dati del medico e della sua utenza
-                        $sql = "SELECT medici.id, usr, psw, nome, cognome
-                                FROM utenze, medici
+                        $sql = "SELECT medici.id, usr, psw, nome, cognome, cod_reparto, denominazione
+                                FROM utenze, medici, reparti
                                 WHERE cod_utenza = utenze.id AND
+                                      cod_reparto = reparti.id AND
                                       usr = :username";
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(":username", $_POST["username"], PDO::PARAM_STR, 100);
@@ -94,23 +95,10 @@
                            $_SESSION["nome"] = $res["nome"];
                            $_SESSION["cognome"] = $res["cognome"];
                            $_SESSION["admin"] = 0;
-
-                           // Estrazione reparti appartenenti al medico
-                           $sql = "SELECT cod_reparto
-                                   FROM specializzazioni
-                                   WHERE cod_medico = :id_medico";
-                           $stmt = $conn->prepare($sql);
-                           $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
-                           $stmt->execute();
-                           $res = $stmt->fetchAll();
-
-                           $reparti = array();
-                           foreach($res as $row) {
-                              $reparti[] = $row["cod_reparto"];
-                           }
-                           $_SESSION["reparti"] = $reparti;
-
-                           header("Location: select.php");
+                           $_SESSION["reparto"] = $res["cod_reparto"];
+                           $_SESSION["reparto_nome"] = $res["denominazione"];
+                           
+                           header("Location: index.php");
                         }
                         else {
                            die("<span class='error'>Credenziali errate</span>");

@@ -100,42 +100,28 @@
                   </div>
 
                   <div class="form-group options">
-                     <div class="btn-group dropup">
-                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           Reparti
-                        </button>
-                        <div class="dropdown-menu scrollable">
-                           <?php
-                              try {
-                                 $conn = connect();
-                                 $sql = "SELECT * FROM reparti ORDER BY denominazione";
-                                 $stmt = $conn->prepare($sql);
-                                 $stmt->execute();
-                                 $res = $stmt->fetchAll();
+                     <select class="custom-select" style="width:auto;" name="reparto" required>
+                        <option value="" selected>Reparto</option>
+                        <?php
+                           try {
+                              $conn = connect();
+                              $sql = "SELECT * FROM reparti ORDER BY denominazione";
+                              $stmt = $conn->prepare($sql);
+                              $stmt->execute();
+                              $res = $stmt->fetchAll();
 
-                                 foreach($res as $row) {
-                                    $id = $row["id"];
-                                    $denom = $row["denominazione"];
-                                    $checked = isset($_POST["reparto"][$id]) ? "checked" : "";
-                                    echo "<label class='dropdown-item'>
-                                          <input type='checkbox' name='reparto[]' value='$id' $checked> $denom
-                                          </label>";
-                                 }
-                                 ?>
-                                 <script type="text/javascript">
-                                    $(document).on('click', '.dropdown-menu', function (e) {
-                                       e.stopPropagation();
-                                    });
-                                 </script>
-                                 <?php
-                              } catch (PDOException $e) {
-                                 $conn = null;
-                                 die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+                              foreach($res as $row) {
+                                 $id = $row["id"];
+                                 $denom = $row["denominazione"];
+                                 echo "<option value='$id'>$denom</option>";
                               }
+                           } catch (PDOException $e) {
                               $conn = null;
-                           ?>
-                        </div>
-                     </div>
+                              die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+                           }
+                           $conn = null;
+                        ?>
+                     </select>
                   </div>
 
                   <div class="form-group">
@@ -183,23 +169,13 @@
                         $id_utenza = $conn->lastInsertId();
 
                         // Inserimento dottore
-                        $sql = "INSERT medici (nome, cognome, cod_utenza) VALUES(:nome, :cognome, :cod_utenza)";
+                        $sql = "INSERT medici (nome, cognome, cod_utenza, cod_reparto) VALUES(:nome, :cognome, :cod_utenza, :cod_reparto)";
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(":nome", trim($_POST["nome"]), PDO::PARAM_STR, 100);
                         $stmt->bindParam(":cognome", trim($_POST["cognome"]), PDO::PARAM_STR, 100);
                         $stmt->bindParam(":cod_utenza", $id_utenza, PDO::PARAM_INT);
+                        $stmt->bindParam(":cod_reparto", $_POST["reparto"], PDO::PARAM_INT);
                         $stmt->execute();
-
-                        $id_medico = $conn->lastInsertId();
-
-                        // Inserimento reparti associati
-                        foreach($_POST["reparto"] as $key=>$id_reparto) {
-                           $sql = "INSERT specializzazioni (cod_reparto, cod_medico) VALUES(:cod_reparto, :cod_medico)";
-                           $stmt = $conn->prepare($sql);
-                           $stmt->bindParam(":cod_reparto", $id_reparto, PDO::PARAM_INT);
-                           $stmt->bindParam(":cod_medico", $id_medico, PDO::PARAM_INT);
-                           $stmt->execute();
-                        }
 
                         $conn->commit();
 

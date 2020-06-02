@@ -7,8 +7,8 @@
       exit;
    }
 
-   if(empty($_SESSION["curr_reparto"])) {
-      header("Location: select.php");
+   if(adminLogged()) {
+      header("Location: ./admin");
       exit;
    }
 ?>
@@ -46,15 +46,6 @@
                <li class="nav-item active">
                   <a class="nav-link">Home</a>
                </li>
-               <?php
-                  if(count($_SESSION["reparti"]) > 1) {
-                     ?>
-                     <li class="nav-item">
-                        <a class="nav-link" href="select.php">Cambia reparto</a>
-                     </li>
-                     <?php
-                  }
-               ?>
                <li class="nav-item">
                   <a class="nav-link" href="logout.php">Logout</a>
                </li>
@@ -63,23 +54,18 @@
       </nav>
 
       <div style="padding-right:20px;padding-top:20px;" class="text-right">
-
+         <h5 style="text-transform: uppercase;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h5>
+         <h6><?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?></h6>
       </div>
 
-      <div class="container-fluid">
+      <div class="container">
          <div class="row text-black">
-            <div class="col">
 
-            </div>
-            <div class="col text-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mx-auto text-center">
                <h1 class="display-4 py-2">Dashboard</h1>
             </div>
-            <div class="col text-right">
-               <h5 style="text-transform: uppercase;"><?php echo $_SESSION["cognome"] . " " . $_SESSION["nome"] ?></h5>
-               <h6><?php echo $_SESSION["curr_reparto_name"] ?></h6>
-            </div>
-         </div>
 
+         </div>
       </div>
 
    </body>

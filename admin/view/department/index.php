@@ -83,9 +83,8 @@
                               $denom = $row["denominazione"];
 
                               $sql = "SELECT nome, cognome
-                                      FROM specializzazioni, medici
-                                      WHERE cod_medico = medici.id AND
-                                            cod_reparto = :id_reparto
+                                      FROM medici
+                                      WHERE cod_reparto = :id_reparto
                                       ORDER BY cognome, nome";
                               $stmt = $conn->prepare($sql);
                               $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);

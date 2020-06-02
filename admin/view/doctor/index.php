@@ -80,14 +80,15 @@
                <div class="table-responsive-lg" align="center">
                   <table class="table table-bordered">
                      <tr style="text-align:center;">
-                        <th>Cognome</th> <th>Nome</th> <th>Username</th> <th>Reparti</th>
+                        <th>Cognome</th> <th>Nome</th> <th>Username</th> <th>Reparto</th>
                      </tr>
                      <?php
                         try {
                            $conn = connect();
-                           $sql = "SELECT medici.id AS id_medico, cognome, nome, usr
-                                   FROM medici, utenze
-                                   WHERE cod_utenza = utenze.id
+                           $sql = "SELECT medici.id AS id_medico, cognome, nome, usr, reparti.id AS id_reparto, denominazione
+                                   FROM medici, utenze, reparti
+                                   WHERE cod_utenza = utenze.id AND
+                                         cod_reparto = reparti.id
                                    ORDER BY cognome, nome";
                            $stmt = $conn->prepare($sql);
                            $stmt->execute();
@@ -98,34 +99,19 @@
                               $nome = $row["nome"];
                               $cognome = $row["cognome"];
                               $username = $row["usr"];
-
-                              $sql = "SELECT reparti.id AS id_reparto, denominazione
-                                      FROM specializzazioni, reparti
-                                      WHERE cod_reparto = reparti.id AND
-                                            cod_medico = :id_medico
-                                      ORDER BY denominazione";
-                              $stmt = $conn->prepare($sql);
-                              $stmt->bindParam(":id_medico", $id_medico, PDO::PARAM_INT);
-                              $stmt->execute();
-                              $res_doc = $stmt->fetchAll();
-
-                              $reparti = "";
-                              $reparti_id = "";
-                              foreach($res_doc as $row_d) {
-                                 $reparti = $reparti . $row_d["denominazione"] . "<br>";
-                                 $reparti_id = $reparti_id . $row_d["id_reparto"] . ":";
-                              }
+                              $reparto = $row["denominazione"];
+                              $id_reparto = $row["id_reparto"];
 
                               echo "<tr>
                                        <td style='text-align:center;' class='align-middle'>$cognome</td>
                                        <td style='text-align:center;' class='align-middle'>$nome</td>
                                        <td style='text-align:center;' class='align-middle'>$username</td>
-                                       <td style='text-align:center;'>$reparti</td>
+                                       <td style='text-align:center;'>$reparto</td>
                                        <td style='text-align:center;' class='align-middle'>
                                           <a href='#' data-toggle='modal' class='click-delete' data-id='$id_medico'>Elimina</a>
                                        </td>
                                        <td style='text-align:center;' class='align-middle'>
-                                          <a href='#' data-toggle='modal' class='click-modify' data-id='$id_medico' data-nome='$nome' data-cognome='$cognome' data-username='$username' data-reparti='$reparti_id'>Modifica</a>
+                                          <a href='#' data-toggle='modal' class='click-modify' data-id='$id_medico' data-nome='$nome' data-cognome='$cognome' data-username='$username' data-reparto='$id_reparto'>Modifica</a>
                                        </td>
                                     </tr>";
 
@@ -167,41 +153,28 @@
                                     <input id="in_cognome" type="text" name="cognome" placeholder="Cognome"><br><br>
                                     <input id="in_username" type="text" name="username" placeholder="Username"><br><br>
                                     <input id="in_password" type="password" name="password" placeholder="Password"><br><br>
-                                    <div class="btn-group dropup">
-                                       <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                          Reparti
-                                       </button>
-                                       <div class="dropdown-menu scrollable">
-                                          <?php
-                                             try {
-                                                $conn = connect();
-                                                $sql = "SELECT * FROM reparti ORDER BY denominazione";
-                                                $stmt = $conn->prepare($sql);
-                                                $stmt->execute();
-                                                $res = $stmt->fetchAll();
+                                    <select name="reparto" class="custom-select" style="width:auto;" required>
+                                       <option value="">Reparto</option>
+                                       <?php
+                                          try {
+                                             $conn = connect();
+                                             $sql = "SELECT * FROM reparti ORDER BY denominazione";
+                                             $stmt = $conn->prepare($sql);
+                                             $stmt->execute();
+                                             $res = $stmt->fetchAll();
 
-                                                foreach($res as $row) {
-                                                   $id = $row["id"];
-                                                   $denom = $row["denominazione"];
-                                                   echo "<label class='dropdown-item'>
-                                                         <input id='in_rep$id' type='checkbox' name='reparto[]' value='$id'> $denom
-                                                         </label>";
-                                                }
-                                                ?>
-                                                <script type="text/javascript">
-                                                   $(document).on('click', '.dropdown-menu', function (e) {
-                                                      e.stopPropagation();
-                                                   });
-                                                </script>
-                                                <?php
-                                             } catch (PDOException $e) {
-                                                $conn = null;
-                                                die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+                                             foreach($res as $row) {
+                                                $id = $row["id"];
+                                                $denom = $row["denominazione"];
+                                                echo "<option id='opt_$id' value='$id'>$denom</option>";
                                              }
+                                          } catch (PDOException $e) {
                                              $conn = null;
-                                          ?>
-                                       </div>
-                                    </div>
+                                             die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+                                          }
+                                          $conn = null;
+                                       ?>
+                                    </select>
                                  </div>
                                  <div class='modal-footer'>
                                     <a class='btn btn-secondary' style='color:white;' data-dismiss='modal'>Annulla</a>
@@ -233,18 +206,13 @@
          var nome = $(this).data('nome');
          var cognome = $(this).data('cognome');
          var username = $(this).data('username');
-         var id_reparti = $(this).data('reparti').split(":");
+         var id_reparto = $(this).data('reparto');
 
          $(".modal-body #in_id").attr("value", id);
          $(".modal-body #in_nome").attr("value", nome);
          $(".modal-body #in_cognome").attr("value", cognome);
          $(".modal-body #in_username").attr("value", username);
-
-         $(".dropdown-item > input").prop('checked', false);
-         for(var i=0; i<id_reparti.length; i++) {
-            // alert(".modal-body #in_rep"+id_reparti[i]);
-            $(".modal-body #in_rep"+id_reparti[i]).prop('checked', true);
-         }
+         $(".modal-body #opt_"+id_reparto).prop('selected', true);
 
          $('#modify').modal('show');
       });
