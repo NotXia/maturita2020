@@ -60,7 +60,7 @@
 
       <div class="container">
          <div class="row text-black">
-            <div class="col-xl-6 col-lg-7 col-md-8 col-sm-12 mx-auto text-center form p-4">
+            <div class="col-xl-6 col-lg-7 col-md-8 col-sm-12 mx-auto text-center p-4">
                <h1 class="display-4 py-2">Amministratori</h1>
                <p>N.B. Se cancelli o modifichi la tua utenza verrai disconnesso</p>
 

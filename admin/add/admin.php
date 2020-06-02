@@ -60,7 +60,7 @@
 
       <div class="container">
          <div class="row text-black">
-            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-10 mx-auto text-center form p-4">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-10 mx-auto text-center p-4">
                <h1 class="display-4">Inserimento admin</h1><br>
 
                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">

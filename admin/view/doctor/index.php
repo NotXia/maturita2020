@@ -74,7 +74,7 @@
 
       <div class="container">
          <div class="row text-black">
-            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mx-auto text-center form p-4">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mx-auto text-center p-4">
                <h1 class="display-4 py-2">Dottori</h1>
 
                <div class="table-responsive-lg" align="center">

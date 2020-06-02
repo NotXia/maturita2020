@@ -16,6 +16,9 @@
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <link rel="stylesheet" href="./css/bootstrap.min.css">
       <link rel="stylesheet" href="./css/styles.css">
+      <script src="./js/jquery.min.js"></script>
+      <script src="./js/popper.min.js"></script>
+      <script src="./js/bootstrap.min.js"></script>
 
       <title>Login</title>
 
@@ -107,7 +110,7 @@
                            }
                            $_SESSION["reparti"] = $reparti;
 
-                           header("Location: index.php");
+                           header("Location: select.php");
                         }
                         else {
                            die("<span class='error'>Credenziali errate</span>");
