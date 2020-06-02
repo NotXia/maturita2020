@@ -149,9 +149,9 @@
                               <form action="modify.php" method="POST">
                                  <div class='modal-body'>
                                     <input id="in_id" type="hidden" name="id">
-                                    <input id="in_nome" type="text" name="nome" placeholder="Nome"><br><br>
-                                    <input id="in_cognome" type="text" name="cognome" placeholder="Cognome"><br><br>
-                                    <input id="in_username" type="text" name="username" placeholder="Username"><br><br>
+                                    <input id="in_nome" type="text" name="nome" placeholder="Nome" required><br><br>
+                                    <input id="in_cognome" type="text" name="cognome" placeholder="Cognome" required><br><br>
+                                    <input id="in_username" type="text" name="username" placeholder="Username" required><br><br>
                                     <input id="in_password" type="password" name="password" placeholder="Password"><br><br>
                                     <select name="reparto" class="custom-select" style="width:auto;" required>
                                        <option value="">Reparto</option>

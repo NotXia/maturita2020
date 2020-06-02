@@ -11,7 +11,7 @@
       exit;
    }
 
-   if(empty($_POST["id"])) {
+   if(empty($_POST["id"]) || empty($_POST["username"])) {
       header("Location: index.php");
       exit;
    }

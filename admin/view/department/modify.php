@@ -9,7 +9,7 @@
       exit;
    }
 
-   if(empty($_POST["id"])) {
+   if(empty($_POST["id"]) || empty($_POST["denominazione"])) {
       header("Location: index.php");
       exit;
    }

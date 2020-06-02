@@ -9,7 +9,7 @@
       exit;
    }
 
-   if(empty($_POST["id"])) {
+   if(empty($_POST["id"]) || empty($_POST["nome"]) || empty($_POST["cognome"]) || empty($_POST["username"]) || empty($_POST["reparto"])) {
       header("Location: index.php");
       exit;
    }

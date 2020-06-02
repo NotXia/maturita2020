@@ -1,4 +1,6 @@
 <?php
+   session_start();
+
    require_once(dirname(__FILE__)."/../../../utilities/login_check.php");
    if(!logged()) {
       header("Location: ../../login.php");
@@ -62,7 +64,7 @@
          <div class="row text-black">
             <div class="col-xl-6 col-lg-7 col-md-8 col-sm-12 mx-auto text-center p-4">
                <h1 class="display-4 py-2">Amministratori</h1>
-               <p>N.B. Se cancelli o modifichi la tua utenza verrai disconnesso</p>
+               <p>N.B. Se modifichi la tua utenza verrai disconnesso</p>
 
                <div class="table-responsive-lg" align="center">
                   <table class="table table-bordered">
@@ -82,10 +84,21 @@
                            foreach ($res as $row) {
                               $id = $row["id"];
                               $username = $row["usr"];
+
+                              $del = "";
+                              if($id == $_SESSION["id"]) {
+                                 $del = "<span data-toggle='tooltip' data-placement='top' title='Non puoi eliminare la tua utenza!'>
+                                             Elimina
+                                          </span>";
+                              }
+                              else {
+                                 $del = "<a href='#' data-toggle='modal' class='click-delete' data-id='$id'>Elimina</a>";
+                              }
+
                               echo "<tr>
                                        <td style='text-align:center;'>$username</td>
                                        <td style='text-align:center;'>
-                                          <a href='#' data-toggle='modal' class='click-delete' data-id='$id'>Elimina</a>
+                                          $del
                                        </td>
                                        <td style='text-align:center;' class='align-middle'>
                                           <a href='#' data-toggle='modal' class='click-modify' data-id='$id' data-username='$username'>Modifica</a>
@@ -125,7 +138,7 @@
                               <form action="modify.php" method="POST">
                                  <div class='modal-body'>
                                     <input id="in_id" type="hidden" name="id">
-                                    <input id="in_username" type="text" name="username" placeholder="Username"><br><br>
+                                    <input id="in_username" type="text" name="username" placeholder="Username" required><br><br>
                                     <input id="in_password" type="password" name="password" placeholder="Password">
                                  </div>
                                  <div class='modal-footer'>
@@ -146,6 +159,10 @@
    </body>
 
    <script type="text/javascript">
+      $(document).ready(function(){
+         $('[data-toggle="tooltip"]').tooltip();
+      });
+
       $(document).on("click", ".click-delete", function () {
          var id = $(this).data('id');
          $(".modal-body #in_id").attr("value", id);

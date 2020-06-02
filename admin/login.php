@@ -63,14 +63,13 @@
                   <input name="submit" type="submit" value="Accedi" class="btn btn-light">
 
                </form>
-               <br>
 
                <?php
                   if(isset($_POST["submit"])) {
 
                      // Verifica campi obbligatori
                      if(empty($_POST["username"]) || empty($_POST["password"])) {
-                        die("<p class='error'>Alcuni campi non sono stati inseriti</p>");
+                        die("<br><p class='error'>Alcuni campi non sono stati inseriti</p>");
                      }
 
                      try {
@@ -88,7 +87,7 @@
                         $res = $stmt->fetch();
 
                         if(empty($res)) {
-                           die("<span class='error'>Utenza non esistente</span>");
+                           die("<br><span class='error'>Utenza non esistente</span>");
                         }
 
                         if(password_verify($_POST["password"], $res["psw"])) {
@@ -99,11 +98,11 @@
                            header("Location: index.php");
                         }
                         else {
-                           die("<span class='error'>Credenziali errate</span>");
+                           die("<br><span class='error'>Credenziali errate</span>");
                         }
 
                      } catch (PDOException $e) {
-                        die("<span class='error'>Qualcosa non ha funzionato</span>");
+                        die("<br><span class='error'>Qualcosa non ha funzionato</span>");
                      }
 
                   }

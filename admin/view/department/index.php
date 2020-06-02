@@ -96,11 +96,21 @@
                                  $medici = $medici . $row_d["cognome"] . " " . $row_d["nome"] . "<br>";
                               }
 
+                              $del = "";
+                              if(strlen($medici) == 0) {
+                                 $del = "<a href='#' data-toggle='modal' class='click-delete' data-id='$id_reparto'>Elimina</a>";
+                              }
+                              else {
+                                 $del = "<span data-toggle='tooltip' data-placement='right' title='Ci sono dei medici in questo reparto'>
+                                             Elimina
+                                          </span>";
+                              }
+
                               echo "<tr>
                                        <td style='text-align:center;' class='align-middle'>$denom</td>
                                        <td style='text-align:center;'>$medici</td>
                                        <td style='text-align:center;' class='align-middle'>
-                                          <a href='#' data-toggle='modal' class='click-delete' data-id='$id_reparto'>Elimina</a>
+                                          $del
                                        </td>
                                        <td style='text-align:center;' class='align-middle'>
                                           <a href='#' data-toggle='modal' class='click-modify' data-id='$id_reparto' data-denominazione='$denom'>Modifica</a>
@@ -133,7 +143,7 @@
                      </div>
 
                      <div class='modal' id='modify' tabindex='-1' role='dialog' aria-labelledby='del$id' aria-hidden='true'>
-                        <div class='modal-dialog role='document'>
+                        <div class='modal-dialog' role='document'>
                            <div class='modal-content'>
                               <div class='modal-header'>
                                  <h5 style='margin:8px;'>Modifica</h5>
@@ -142,7 +152,7 @@
                                  <div class='modal-body'>
                                     <input id="in_id" type="hidden" name="id">
                                     <label for="in_denominazione">Denominazione</label>
-                                    <input id="in_denominazione" type="text" name="denominazione">
+                                    <input id="in_denominazione" type="text" name="denominazione" required>
                                  </div>
                                  <div class='modal-footer'>
                                     <a class='btn btn-secondary' style='color:white;' data-dismiss='modal'>Annulla</a>
@@ -162,6 +172,10 @@
    </body>
 
    <script type="text/javascript">
+      $(document).ready(function(){
+         $('[data-toggle="tooltip"]').tooltip();
+      });
+
       $(document).on("click", ".click-delete", function () {
          var id = $(this).data('id');
          $(".modal-body #in_id").attr("value", id);
