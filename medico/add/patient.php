@@ -1,4 +1,5 @@
 <?php
+   ob_start();
    session_start();
 
    require_once(dirname(__FILE__)."/../../utilities/login_check.php");
@@ -101,7 +102,7 @@
 
          <div class="row">
             <div class="col-xl-6 col-lg-7 col-md-8 col-sm-10 mx-auto p-4 text-center">
-               <h1 class="display-4">Inserimento visita</h1>
+               <h1 class="display-4">Inserimento ricovero</h1>
 
                <div id="form_1">
                   <h3>Dati del paziente</h3><br>
@@ -118,7 +119,8 @@
                </div>
 
                <div id="form_2" style="display:none;">
-                  <h3>Dati del paziente</h3><br>
+                  <h3>Dati del paziente</h3>
+                  <p>Il codice fiscale non è presente nell'anagrafica, registra il nuovo paziente</p>
                   <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                      <input type="hidden" name="cf" value="<?php if(!empty($_POST['cf'])) echo $_POST['cf']; ?>">
                      <div class="form-group">
@@ -157,20 +159,12 @@
                </div>
 
                <div id="form_3" style="display:none;">
-                  <h3>Orario</h3><br>
+                  <h3>Altri dati</h3><br>
                   <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                      <input type="hidden" name="cf" value="<?php if(!empty($_POST['cf'])) echo htmlentities($_POST['cf']); ?>">
                      <div class="form-group">
-                        <label for="data">Data</label><br>
-                        <input id="data" name="data" type="date" min="<?php echo htmlentities(date("Y-m-d")); ?>" value="<?php if(!empty($_POST['data'])) echo htmlentities($_POST['data']); ?>" required>
-                     </div>
-                     <div class="form-group">
-                        <label for="ora_inizio">Ora inizio</label><br>
-                        <input id="ora_inizio" name="ora_inizio" type="time" value="<?php if(!empty($_POST['ora_inizio'])) echo htmlentities($_POST['ora_inizio']); ?>" required>
-                     </div>
-                     <div class="form-group">
-                        <label for="ora_fine">Ora fine</label><br>
-                        <input id="ora_fine" name="ora_fine" type="time" value="<?php if(!empty($_POST['ora_fine'])) echo htmlentities($_POST['ora_fine']); ?>" required>
+                        <label for="note">Motivazione</label><br>
+                        <textarea id="note" name="note" rows="6" required><?php if(!empty($_POST['data'])) echo htmlentities($_POST['data']); ?></textarea>
                      </div>
 
                      <div class="form-group">
@@ -201,6 +195,7 @@
       }
 
       try {
+
          $conn = connect();
 
          // Controlla se il paziente esiste
@@ -216,11 +211,37 @@
             exit;
          }
          else {
+            // Controlla se il paziente è già ricoverato nel reparto
+            $sql = "SELECT medici.id AS id_medico, medici.nome, medici.cognome
+                    FROM ricoveri, medici
+                    WHERE cod_medico = medici.id AND
+                          cod_paziente = :cf AND
+                          data_fine IS NULL AND
+                          cod_medico IN (SELECT id FROM medici WHERE cod_reparto = :id_reparto)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
+            $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
+            $stmt->execute();
+            $res = $stmt->fetch();
+
+            if(!empty($res["cognome"])) {
+               $id = $res["id_medico"];
+               $cognome = $res["cognome"];
+               $nome = $res["nome"];
+               if($_SESSION["id"] == $id) {
+                  die("<p class='error'>Hai già ricoverato questo paziente</p>");
+               }
+               else {
+                  die("<p class='error'>Il paziente è già stato ricoverato da $cognome $nome</p>");
+               }
+            }
+
             gotoForm3();
             exit;
          }
+
       } catch (PDOException $e) {
-         die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+         die("<p class='error'>Qualcosa è andato storto</p>");
       }
 
    } // if(isset($_POST["submit_1"]))
@@ -265,16 +286,21 @@
          $stmt->execute();
 
          if($stmt->fetch()["num"] == 0) { // Non esiste
+            $nome = trim($_POST["nome"]);
+            $cognome = trim($_POST["cognome"]);
+            $email = trim($_POST["email"]);
+            $telefono = trim($_POST["telefono"]);
+
             $sql = "INSERT pazienti (cf, nome, cognome, ddn, sesso, email, telefono)
                     VALUES(:cf, :nome, :cognome, :ddn, :sesso, :email, :telefono)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
-            $stmt->bindParam(":nome", trim($_POST["nome"]), PDO::PARAM_STR, 100);
-            $stmt->bindParam(":cognome", trim($_POST["cognome"]), PDO::PARAM_STR, 100);
+            $stmt->bindParam(":nome", $nome, PDO::PARAM_STR, 100);
+            $stmt->bindParam(":cognome", $cognome, PDO::PARAM_STR, 100);
             $stmt->bindParam(":ddn", $_POST["ddn"]);
             $stmt->bindParam(":sesso", $_POST["sesso"], PDO::PARAM_STR, 1);
-            $stmt->bindParam(":email", trim($_POST["email"]), PDO::PARAM_STR, 100);
-            $stmt->bindParam(":telefono", trim($_POST["telefono"]), PDO::PARAM_STR, 20);
+            $stmt->bindParam(":email", $email, PDO::PARAM_STR, 100);
+            $stmt->bindParam(":telefono", $telefono, PDO::PARAM_STR, 20);
             $stmt->execute();
 
             gotoForm3();
@@ -285,7 +311,7 @@
             exit;
          }
       } catch (PDOException $e) {
-         die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+         die("<p class='error'>Qualcosa è andato storto</p>");
       }
 
    } // if(isset($_POST["submit_2"]))
@@ -303,52 +329,23 @@
          exit;
       }
 
-      if(empty($_POST["data"]) || empty($_POST["ora_inizio"]) || empty($_POST["ora_fine"])) {
-         die("<p class='error'>Alcuni campi non sono stati inseriti</p>");
-      }
-
-      // Controllo data
-      if(strtotime($_POST["data"]) < strtotime(date("Y-m-d"))) {
-         die("<p class='error'>La data non è valida</p>");
-      }
-
-      // Controllo orario
-      if(strtotime($_POST["ora_inizio"]) < strtotime($_POST["ora_fine"])) {
-         die("<p class='error'>L'orario non è valido</p>");
-      }
-
       try {
          $conn = connect();
 
-         // Controlla se il paziente esiste
-         $sql = "SELECT COUNT(*) as num
-                 FROM pazienti
-                 WHERE cf = :cf";
+         $sql = "INSERT ricoveri (data_inizio, motivo, cod_medico, cod_paziente)
+                 VALUES(NOW(), :motivo, :cod_medico, :cod_paziente)";
          $stmt = $conn->prepare($sql);
-         $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
+         $stmt->bindParam(":motivo", $_POST["note"], PDO::PARAM_STR, 500);
+         $stmt->bindParam(":cod_medico", $_SESSION["id"], PDO::PARAM_INT);
+         $stmt->bindParam(":cod_paziente", $_POST["cf"], PDO::PARAM_STR, 16);
          $stmt->execute();
 
-         if($stmt->fetch()["num"] == 0) { // Non esiste
-            $sql = "INSERT pazienti (cf, nome, cognome, ddn, sesso, email, telefono)
-                    VALUES(:cf, :nome, :cognome, :ddn, :sesso, :email, :telefono)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
-            $stmt->bindParam(":nome", $_POST["nome"], PDO::PARAM_STR, 100);
-            $stmt->bindParam(":cognome", $_POST["cognome"], PDO::PARAM_STR, 100);
-            $stmt->bindParam(":ddn", $_POST["ddn"]);
-            $stmt->bindParam(":sesso", $_POST["sesso"], PDO::PARAM_STR, 1);
-            $stmt->bindParam(":email", $_POST["email"], PDO::PARAM_STR, 100);
-            $stmt->bindParam(":telefono", $_POST["telefono"], PDO::PARAM_STR, 20);
-            $stmt->execute();
-
-
-         }
-         else {
-
-         }
+         header("Location: ../index.php");
       } catch (PDOException $e) {
-         die("<p class='error'>Si è verificato un errore nel caricamento dei reparti</p>");
+         echo $e->getMessage();
+         die("<p class='error'>Si è verificato un errore nell'inserimento del ricovero</p>");
       }
+
 
    } // if(isset($_POST["submit_3"]))
 

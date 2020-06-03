@@ -70,6 +70,11 @@
                   </div>
 
                   <div class="form-group">
+                     <label for="posti">Posti totali</label><br>
+                     <input id="posti" name="posti" type="number" min="0" value="<?php if(!empty($_POST['posti'])) echo htmlentities($_POST['posti']); ?>" required>
+                  </div>
+
+                  <div class="form-group">
                      <input name="submit" type="submit" value="Inserisci">
                   </div>
                </form>
@@ -78,19 +83,24 @@
                   if(isset($_POST["submit"])) {
 
                      // Verifica campi obbligatori
-                     if(empty($_POST["denom"])) {
+                     if(empty($_POST["denom"]) || empty($_POST["posti"])) {
                         die("<p class='error'>Alcuni campi non sono stati inseriti</p>");
                      }
 
                      try {
                         $conn = connect();
-                        $sql = "INSERT reparti (denominazione) VALUES(:denominazione)";
+
+                        $denominazione = trim($_POST["denom"]);
+
+                        $sql = "INSERT reparti (denominazione, posti_totali) VALUES(:denominazione, :posti)";
                         $stmt = $conn->prepare($sql);
-                        $stmt->bindParam(":denominazione", trim($_POST["denom"]), PDO::PARAM_STR, 100);
+                        $stmt->bindParam(":denominazione", $denominazione, PDO::PARAM_STR, 100);
+                        $stmt->bindParam(":posti", $_POST["posti"], PDO::PARAM_INT);
                         $stmt->execute();
 
                         header("Location: index.php");
                      } catch (PDOException $e) {
+                        echo $e->getMessage();
                         die("<p class='error'>Qualcosa non ha funzionato</p>");
                      }
 

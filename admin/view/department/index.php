@@ -60,13 +60,13 @@
 
       <div class="container">
          <div class="row text-black">
-            <div class="col-xl-6 col-lg-7 col-md-8 col-sm-12 mx-auto text-center p-4">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mx-auto text-center p-4">
                <h1 class="display-4 py-2">Reparti</h1>
 
                <div class="table-responsive-lg" align="center">
                   <table class="table table-bordered">
                      <tr style="text-align:center;">
-                        <th>Denominazione</th> <th>Medici</th>
+                        <th class="align-middle">Denominazione</th>  <th class="align-middle">Posti totali</th> <th class="align-middle">Medici</th>
                      </tr>
                      <?php
                         try {
@@ -81,6 +81,7 @@
                            foreach ($res as $row) {
                               $id_reparto = $row["id"];
                               $denom = $row["denominazione"];
+                              $posti_tot = $row["posti_totali"];
 
                               $sql = "SELECT nome, cognome
                                       FROM medici
@@ -108,12 +109,13 @@
 
                               echo "<tr>
                                        <td style='text-align:center;' class='align-middle'>$denom</td>
+                                       <td style='text-align:center;' class='align-middle'>$posti_tot</td>
                                        <td style='text-align:center;'>$medici</td>
                                        <td style='text-align:center;' class='align-middle'>
                                           $del
                                        </td>
                                        <td style='text-align:center;' class='align-middle'>
-                                          <a href='#' data-toggle='modal' class='click-modify' data-id='$id_reparto' data-denominazione='$denom'>Modifica</a>
+                                          <a href='#' data-toggle='modal' class='click-modify' data-id='$id_reparto' data-denominazione='$denom' data-posti='$posti_tot'>Modifica</a>
                                        </td>
                                     </tr>";
 
@@ -151,8 +153,8 @@
                               <form action="modify.php" method="POST">
                                  <div class='modal-body'>
                                     <input id="in_id" type="hidden" name="id">
-                                    <label for="in_denominazione">Denominazione</label>
-                                    <input id="in_denominazione" type="text" name="denominazione" required>
+                                    <input id="in_denominazione" type="text" name="denominazione" placeholder="Denominazione" required><br><br>
+                                    <input id="in_posti" type="number" min="0" name="posti_totali" placeholder="Posti totali" required>
                                  </div>
                                  <div class='modal-footer'>
                                     <a class='btn btn-secondary' style='color:white;' data-dismiss='modal'>Annulla</a>
@@ -186,8 +188,10 @@
       $(document).on("click", ".click-modify", function () {
          var id = $(this).data('id');
          var denom = $(this).data('denominazione');
+         var posti = $(this).data('posti');
          $(".modal-body #in_id").attr("value", id);
          $(".modal-body #in_denominazione").attr("value", denom);
+         $(".modal-body #in_posti").attr("value", posti);
 
          $('#modify').modal('show');
       });

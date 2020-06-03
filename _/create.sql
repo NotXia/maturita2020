@@ -12,9 +12,11 @@ CREATE TABLE utenze (
 
 CREATE TABLE reparti (
    id INT AUTO_INCREMENT PRIMARY KEY,
-   denominazione VARCHAR(100) NOT NULL
+   denominazione VARCHAR(100) NOT NULL,
+   posti_totali INT NOT NULL,
+   CHECK (posti_totali >= 0)
 );
-INSERT reparti VALUES(null, "Farmacia");
+INSERT reparti VALUES(null, "Farmacia", 0);
 
 CREATE TABLE medici (
    id INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,6 +39,17 @@ CREATE TABLE pazienti (
    CHECK(sesso='M' OR sesso='F')
 );
 
+CREATE TABLE ricoveri (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   data_inizio DATETIME NOT NULL,
+   data_fine DATETIME NOT NULL DEFAULT(NULL),
+   motivo VARCHAR(500),
+   cod_medico INT NOT NULL,
+   cod_paziente VARCHAR(16) NOT NULL
+   FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+   FOREIGN KEY (cod_paziente) REFERENCES pazienti(cf) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 CREATE TABLE farmaci (
    id INT AUTO_INCREMENT PRIMARY KEY,
    denominazione VARCHAR(100) NOT NULL,
@@ -51,23 +64,20 @@ CREATE TABLE prescrizioni (
    qta INT NOT NULL,
    qta_ritirata INT NOT NULL DEFAULT(0),
    cod_farmaco INT NOT NULL,
-   FOREIGN KEY (cod_farmaco) REFERENCES farmaci(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-   CHECK (qta >= 0 AND qta_ritirata <= qta)
+   FOREIGN KEY (cod_farmaco) REFERENCES farmaci(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+   CHECK (qta > 0 AND qta_ritirata <= qta)
 );
 
 CREATE TABLE visite (
    id INT AUTO_INCREMENT PRIMARY KEY,
-   data DATE NOT NULL,
-   ora_inizio TIME NOT NULL,
-   ora_fine TIME NOT NULL,
+   orario DATETIME NOT NULL,
    pressione FLOAT,
    temperatura FLOAT,
    saturazione FLOAT,
    battito FLOAT,
-   cod_medico INT NOT NULL,
-   cod_paziente VARCHAR(16) NOT NULL
-   FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-   FOREIGN KEY (cod_paziente) REFERENCES pazienti(cf) ON DELETE RESTRICT ON UPDATE RESTRICT
+   note VARCHAR(500),
+   cod_ricovero INT NOT NULL,
+   FOREIGN KEY (cod_ricovero) REFERENCES ricoveri(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE INDEX medicinali ON farmaci(denominazione);

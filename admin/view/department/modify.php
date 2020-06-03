@@ -67,13 +67,34 @@
       <?php
          try {
             $conn = connect();
+
+            $conn->beginTransaction();
+
+            // Numero di recoverati di un determinato reparto
+            $sql = "SELECT COUNT(*) AS num
+                    FROM ricoveri, medici
+                    WHERE cod_medico = medici.id AND
+                          cod_reparto = :id_reparto";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(":id_reparto", $_POST["id"], PDO::PARAM_INT);
+            $stmt->execute();
+
+            if($stmt->fetch()["num"] > $_POST["posti_totali"]) {
+               $conn->rollBack();
+               die("<p class='error'>I pazienti ricoverati superato in nuovo numero totale di posti</p>");
+            }
+
             $sql = "UPDATE reparti
-                    SET denominazione = :denominazione
+                    SET denominazione = :denominazione,
+                        posti_totali = :posti_totali
                     WHERE id = :id";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":id", $_POST["id"], PDO::PARAM_INT);
             $stmt->bindParam(":denominazione", $_POST["denominazione"], PDO::PARAM_STR, 100);
+            $stmt->bindParam(":posti_totali", $_POST["posti_totali"], PDO::PARAM_STR, 100);
             $stmt->execute();
+
+            $conn->commit();
 
             header("Location: index.php");
 
@@ -83,6 +104,7 @@
                </script> -->
             <?php
          } catch (PDOException $e) {
+            $conn->rollBack();
             die("<p class='error'>Si è verificato un errore nell'aggiornamento</p>");
          }
       ?>

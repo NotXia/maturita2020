@@ -4,6 +4,11 @@
    font-weight: bold;
 }
 
+.message {
+   text-align: center;
+   font-weight: bold;
+}
+
 .option {
    width: 100%;
    margin-bottom: 25px;

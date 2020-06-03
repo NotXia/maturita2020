@@ -77,15 +77,21 @@
       <div class="container">
 
          <div class="row p-5" style="padding-bottom:0px !important;">
-            <div class="col-xl-6 col-lg-7 col-md-8 col-sm-10 mx-auto p-2 text-center border border-secondary rounded">
+            <div class="col-xl-6 col-lg-7 col-md-8 col-sm-10 mx-auto p-3 text-center border border-secondary rounded">
                <h5>La tua giornata</h5>
                <?php
                   try {
                      $conn = connect();
-                     $sql = "SELECT id, orario, cod_paziente
-                             FROM visite
-                             WHERE cod_medico = :id_medico AND
-                                   DATE(orario) = DATE(NOW())";
+                     $sql = "SELECT ricoveri.id AS id_ricovero, pazienti.nome, pazienti.cognome, pazienti.cf
+                             FROM ricoveri, pazienti
+                             WHERE cod_paziente = pazienti.cf AND
+                                   cod_medico = :id_medico AND
+                                   cod_paziente NOT IN (SELECT cod_paziente
+                                                        FROM ricoveri, visite
+                                                        WHERE cod_ricovero = ricoveri.id AND
+                                                              cod_medico = :id_medico AND
+                                                              DATE(orario) = DATE(NOW()))
+                             ORDER BY pazienti.cognome, pazienti.nome";
                      $stmt = $conn->prepare($sql);
                      $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
                      $stmt->execute();
@@ -94,13 +100,14 @@
                      $zero_visite = true;
                      foreach($res as $row) {
                         $zero_visite = false;
-                        $id = $row["id"];
-                        $orario = date($row["orario"], "d-m-Y H:i");
-                        $cf = $row["cod_paziente"];
-                        echo "<p>$orario $cf</p>";
+                        $id = $row["id_ricovero"];
+                        $cf = $row["cf"];
+                        $nome = $row["nome"];
+                        $cognome = $row["cognome"];
+                        echo "<p style='margin:0'>$cognome $nome [$cf]</p>";
                      }
                      if($zero_visite) {
-                        echo "<p style='margin:0'>Non ci sono visite oggi</p>";
+                        echo "<p style='margin:0'>Non ci sono pazienti da visitare</p>";
                      }
                      $conn = null;
                   } catch (PDOException $e) {
@@ -113,7 +120,7 @@
 
          <div class="row p-4">
             <div class="col-xl-4 col-lg-5 col-md-8 col-sm-10 mx-auto text-center">
-               <a class=" btn btn-secondary task" href="./add/appointment.php">Inserisci visita</a>
+               <a class=" btn btn-secondary task" href="./add/patient.php">Inserisci ricovero</a>
             </div>
          </div>
       </div>

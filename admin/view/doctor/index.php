@@ -102,13 +102,27 @@
                               $reparto = $row["denominazione"];
                               $id_reparto = $row["id_reparto"];
 
+                              $sql = "SELECT COUNT(*) AS num
+                                      FROM ricoveri
+                                      WHERE cod_medico = :cod_medico";
+                              $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":cod_medico", $row["id_medico"], PDO::PARAM_INT);
+                              $stmt->execute();
+
+                              $del = "<a href='#' data-toggle='modal' class='click-delete' data-id='$id_medico'>Elimina</a>";
+                              if($stmt->fetch()["num"] != 0) {
+                                 $del = "<span data-toggle='tooltip' data-placement='right' title='Ci sono dei pazienti affidati a questo medico'>
+                                             Elimina
+                                          </span>";
+                              }
+
                               echo "<tr>
                                        <td style='text-align:center;' class='align-middle'>$cognome</td>
                                        <td style='text-align:center;' class='align-middle'>$nome</td>
                                        <td style='text-align:center;' class='align-middle'>$username</td>
                                        <td style='text-align:center;'>$reparto</td>
                                        <td style='text-align:center;' class='align-middle'>
-                                          <a href='#' data-toggle='modal' class='click-delete' data-id='$id_medico'>Elimina</a>
+                                          $del
                                        </td>
                                        <td style='text-align:center;' class='align-middle'>
                                           <a href='#' data-toggle='modal' class='click-modify' data-id='$id_medico' data-nome='$nome' data-cognome='$cognome' data-username='$username' data-reparto='$id_reparto'>Modifica</a>
@@ -194,6 +208,10 @@
    </body>
 
    <script type="text/javascript">
+      $(document).ready(function(){
+         $('[data-toggle="tooltip"]').tooltip();
+      });
+
       $(document).on("click", ".click-delete", function () {
          var id = $(this).data('id');
          $(".modal-body #in_id").attr("value", id);
