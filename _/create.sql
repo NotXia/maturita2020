@@ -63,11 +63,9 @@ CREATE TABLE visite (
    saturazione FLOAT,
    battito FLOAT,
    cod_medico INT NOT NULL,
-   cod_paziente VARCHAR(16) NOT NULL,
-   cod_reparto INT NOT NULL,
+   cod_paziente VARCHAR(16) NOT NULL
    FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-   FOREIGN KEY (cod_paziente) REFERENCES pazienti(cf) ON DELETE RESTRICT ON UPDATE RESTRICT,
-   FOREIGN KEY (cod_reparto) REFERENCES reparti(id) ON DELETE RESTRICT ON UPDATE RESTRICT
+   FOREIGN KEY (cod_paziente) REFERENCES pazienti(cf) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 CREATE INDEX medicinali ON farmaci(denominazione);
