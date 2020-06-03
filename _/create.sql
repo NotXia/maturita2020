@@ -57,7 +57,9 @@ CREATE TABLE prescrizioni (
 
 CREATE TABLE visite (
    id INT AUTO_INCREMENT PRIMARY KEY,
-   orario DATETIME NOT NULL,
+   data DATE NOT NULL,
+   ora_inizio TIME NOT NULL,
+   ora_fine TIME NOT NULL,
    pressione FLOAT,
    temperatura FLOAT,
    saturazione FLOAT,

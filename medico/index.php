@@ -11,6 +11,8 @@
       header("Location: ../admin");
       exit;
    }
+
+   require_once(dirname(__FILE__)."/../utilities/database.php");
 ?>
 
 <!DOCTYPE html>
@@ -21,11 +23,20 @@
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <link rel="stylesheet" href="../css/bootstrap.min.css">
       <link rel="stylesheet" href="../css/navbar.css">
+      <link rel="stylesheet" href="../css/styles.css">
       <script src="../js/jquery.min.js"></script>
       <script src="../js/popper.min.js"></script>
       <script src="../js/bootstrap.min.js"></script>
 
       <title>Dashboard</title>
+
+      <style media="screen">
+         .task {
+            width: 100%;
+            padding: 10px;
+         }
+      </style>
+
    </head>
 
    <body>
@@ -64,12 +75,46 @@
 
 
       <div class="container">
-         <div class="row text-black">
 
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mx-auto text-center p-4">
-               <h1 class="display-4 py-2">Dashboard</h1>
+         <div class="row p-5" style="padding-bottom:0px !important;">
+            <div class="col-xl-6 col-lg-7 col-md-8 col-sm-10 mx-auto p-2 text-center border border-secondary rounded">
+               <h5>La tua giornata</h5>
+               <?php
+                  try {
+                     $conn = connect();
+                     $sql = "SELECT id, orario, cod_paziente
+                             FROM visite
+                             WHERE cod_medico = :id_medico AND
+                                   DATE(orario) = DATE(NOW())";
+                     $stmt = $conn->prepare($sql);
+                     $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
+                     $stmt->execute();
+                     $res = $stmt->fetchAll();
+
+                     $zero_visite = true;
+                     foreach($res as $row) {
+                        $zero_visite = false;
+                        $id = $row["id"];
+                        $orario = date($row["orario"], "d-m-Y H:i");
+                        $cf = $row["cod_paziente"];
+                        echo "<p>$orario $cf</p>";
+                     }
+                     if($zero_visite) {
+                        echo "<p style='margin:0'>Non ci sono visite oggi</p>";
+                     }
+                     $conn = null;
+                  } catch (PDOException $e) {
+                     $conn = null;
+                     die("<br><span class='error'>Non è stato possibile estrare le visite di oggi</span>");
+                  }
+               ?>
             </div>
+         </div>
 
+         <div class="row p-4">
+            <div class="col-xl-4 col-lg-5 col-md-8 col-sm-10 mx-auto text-center">
+               <a class=" btn btn-secondary task" href="./add/appointment.php">Inserisci visita</a>
+            </div>
          </div>
       </div>
 
