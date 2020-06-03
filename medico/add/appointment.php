@@ -269,12 +269,12 @@
                     VALUES(:cf, :nome, :cognome, :ddn, :sesso, :email, :telefono)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
-            $stmt->bindParam(":nome", $_POST["nome"], PDO::PARAM_STR, 100);
-            $stmt->bindParam(":cognome", $_POST["cognome"], PDO::PARAM_STR, 100);
+            $stmt->bindParam(":nome", trim($_POST["nome"]), PDO::PARAM_STR, 100);
+            $stmt->bindParam(":cognome", trim($_POST["cognome"]), PDO::PARAM_STR, 100);
             $stmt->bindParam(":ddn", $_POST["ddn"]);
             $stmt->bindParam(":sesso", $_POST["sesso"], PDO::PARAM_STR, 1);
-            $stmt->bindParam(":email", $_POST["email"], PDO::PARAM_STR, 100);
-            $stmt->bindParam(":telefono", $_POST["telefono"], PDO::PARAM_STR, 20);
+            $stmt->bindParam(":email", trim($_POST["email"]), PDO::PARAM_STR, 100);
+            $stmt->bindParam(":telefono", trim($_POST["telefono"]), PDO::PARAM_STR, 20);
             $stmt->execute();
 
             gotoForm3();
