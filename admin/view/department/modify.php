@@ -70,29 +70,47 @@
 
             $conn->beginTransaction();
 
-            // Numero di recoverati di un determinato reparto
-            $sql = "SELECT COUNT(*) AS num
-                    FROM ricoveri, medici
-                    WHERE cod_medico = medici.id AND
-                          cod_reparto = :id_reparto";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(":id_reparto", $_POST["id"], PDO::PARAM_INT);
-            $stmt->execute();
-
-            if($stmt->fetch()["num"] > $_POST["posti_totali"]) {
-               $conn->rollBack();
-               die("<p class='error'>I pazienti ricoverati superato in nuovo numero totale di posti</p>");
-            }
-
             $sql = "UPDATE reparti
-                    SET denominazione = :denominazione,
-                        posti_totali = :posti_totali
+                    SET denominazione = :denominazione
                     WHERE id = :id";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":id", $_POST["id"], PDO::PARAM_INT);
             $stmt->bindParam(":denominazione", $_POST["denominazione"], PDO::PARAM_STR, 100);
-            $stmt->bindParam(":posti_totali", $_POST["posti_totali"], PDO::PARAM_STR, 100);
             $stmt->execute();
+
+            // Aggiorna i nomi dei posti già inseriti
+            if(isset($_POST["posti_old"])) {
+               foreach($_POST["posti_old"] as $id=>$name) {
+                  if(!empty($name)) {
+                     $sql = "UPDATE posti
+                             SET nome = :nome
+                             WHERE id = :id";
+                     $stmt = $conn->prepare($sql);
+                     $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+                     $stmt->bindParam(":nome", $name, PDO::PARAM_STR, 100);
+                     $stmt->execute();
+                  }
+                  else {
+                     $sql = "DELETE FROM posti
+                             WHERE id = :id";
+                     $stmt = $conn->prepare($sql);
+                     $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+                     $stmt->execute();
+                  }
+               }
+            }
+
+            if(isset($_POST["posti_new"])) {
+               foreach($_POST["posti_new"] as $id=>$name) {
+                  if(!empty($name)) {
+                     $sql = "INSERT posti (nome, cod_reparto) VALUES(:nome, :cod_reparto)";
+                     $stmt = $conn->prepare($sql);
+                     $stmt->bindParam(":nome", $name, PDO::PARAM_STR, 100);
+                     $stmt->bindParam(":cod_reparto", $_POST["id"], PDO::PARAM_INT);
+                     $stmt->execute();
+                  }
+               }
+            }
 
             $conn->commit();
 

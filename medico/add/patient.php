@@ -15,6 +15,7 @@
 
    require_once(dirname(__FILE__)."/../../utilities/database.php");
 
+
    function gotoForm1() {
       ?>
          <script type="text/javascript">
@@ -45,6 +46,48 @@
       <?php
    }
 
+   function controlloRicoveri($cf) {
+      // Controlla se il paziente è già ricoverato nel reparto
+      try {
+         $conn = connect();
+         $sql = "SELECT medici.id AS id_medico, medici.nome, medici.cognome, denominazione
+                 FROM ricoveri, medici, reparti
+                 WHERE cod_medico = medici.id AND
+                       cod_reparto = reparti.id AND
+                       cod_paziente = :cf AND
+                       data_fine IS NULL";
+         $stmt = $conn->prepare($sql);
+         $stmt->bindParam(":cf", $cf, PDO::PARAM_STR, 16);
+         $stmt->execute();
+
+         $conn = null;
+         return $stmt->fetch();
+      } catch (PDOException $e) {
+         return null;
+      }
+   }
+
+   function controlloPosti() {
+      try {
+         $conn = connect();
+         // Controllo disponibilità posti
+         $sql = "SELECT (SELECT COUNT(*) FROM posti WHERE cod_reparto = :id_reparto)-COUNT(*) AS num
+                 FROM posti, ricoveri
+                 WHERE cod_posto = posti.id AND
+                       cod_reparto = :id_reparto AND
+                       data_fine IS NULL";
+         $stmt = $conn->prepare($sql);
+         $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
+         $stmt->execute();
+
+         $conn = null;
+         return $stmt->fetch()["num"];
+      } catch (PDOException $e) {
+         $conn = null;
+         return 0;
+      }
+   }
+
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +103,7 @@
       <script src="../../js/popper.min.js"></script>
       <script src="../../js/bootstrap.min.js"></script>
 
-      <title>Inserisci visita</title>
+      <title>Ricovera</title>
    </head>
 
    <body>
@@ -102,7 +145,13 @@
 
          <div class="row">
             <div class="col-xl-6 col-lg-7 col-md-8 col-sm-10 mx-auto p-4 text-center">
-               <h1 class="display-4">Inserimento ricovero</h1>
+               <h1 class="display-4">Ricovero</h1>
+
+               <?php
+                  if(controlloPosti() == 0) {
+                     die("<p class='error'>Non ci sono posti disponibili</p>");
+                  }
+               ?>
 
                <div id="form_1">
                   <h3>Dati del paziente</h3><br>
@@ -113,7 +162,7 @@
                      </div>
 
                      <div class="form-group">
-                        <input name="submit_1" type="submit" value="Avanti">
+                        <input class="btn btn-outline-secondary" name="submit_1" type="submit" value="Avanti">
                      </div>
                   </form>
                </div>
@@ -153,7 +202,7 @@
                      </div>
 
                      <div class="form-group">
-                        <input name="submit_2" type="submit" value="Avanti">
+                        <input class="btn btn-outline-secondary" name="submit_2" type="submit" value="Avanti">
                      </div>
                   </form>
                </div>
@@ -164,11 +213,44 @@
                      <input type="hidden" name="cf" value="<?php if(!empty($_POST['cf'])) echo htmlentities($_POST['cf']); ?>">
                      <div class="form-group">
                         <label for="note">Motivazione</label><br>
-                        <textarea id="note" name="note" rows="6" required><?php if(!empty($_POST['data'])) echo htmlentities($_POST['data']); ?></textarea>
+                        <textarea id="note" name="note" rows="6"><?php if(!empty($_POST['data'])) echo htmlentities($_POST['data']); ?></textarea><br><br>
+                        <label for="posto">Posto</label><br>
+                        <select class='custom-select' style='width:auto;' id="posto" name="posto" required>
+                           <?php
+                              try {
+                                 $conn = connect();
+
+                                 // Estrae i posti disponibili
+                                 $sql = "SELECT id, nome
+                                         FROM posti
+                                         WHERE cod_reparto = :id_reparto AND
+                                               id NOT IN (SELECT cod_posto
+                                                          FROM posti, ricoveri
+                                                          WHERE cod_posto = posti.id AND
+                                                                cod_reparto = :id_reparto AND
+                                                                data_fine IS NULL)";
+                                 $stmt = $conn->prepare($sql);
+                                 $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
+                                 $stmt->execute();
+                                 $res = $stmt->fetchAll();
+
+                                 foreach($res as $row) {
+                                    $id = $row["id"];
+                                    $nome = $row["nome"];
+                                    echo "<option value='$id'>$nome</option>";
+                                 }
+
+                                 $conn = null;
+                              } catch (PDOException $e) {
+                                 $conn = null;
+                                 die("<p class='error'>Non è stato possibile estrarre i posti disponibili</p>");
+                              }
+                           ?>
+                        </select>
                      </div>
 
                      <div class="form-group">
-                        <input name="submit_3" type="submit" value="Inserisci">
+                        <input class="btn btn-outline-secondary" name="submit_3" type="submit" value="Inserisci">
                      </div>
                   </form>
                </div>
@@ -211,33 +293,24 @@
             exit;
          }
          else {
-            // Controlla se il paziente è già ricoverato nel reparto
-            $sql = "SELECT medici.id AS id_medico, medici.nome, medici.cognome
-                    FROM ricoveri, medici
-                    WHERE cod_medico = medici.id AND
-                          cod_paziente = :cf AND
-                          data_fine IS NULL AND
-                          cod_medico IN (SELECT id FROM medici WHERE cod_reparto = :id_reparto)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
-            $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
-            $stmt->execute();
-            $res = $stmt->fetch();
+            $check_ricoveri = controlloRicoveri($_POST["cf"]);
 
-            if(!empty($res["cognome"])) {
-               $id = $res["id_medico"];
-               $cognome = $res["cognome"];
-               $nome = $res["nome"];
+            if(!empty($check_ricoveri)) {
+               $id = $check_ricoveri["id_medico"];
+               $medico = strtoupper($check_ricoveri["cognome"]) . " " . strtoupper($check_ricoveri["nome"]);
+               $reparto = strtoupper($check_ricoveri["denominazione"]);
                if($_SESSION["id"] == $id) {
                   die("<p class='error'>Hai già ricoverato questo paziente</p>");
                }
                else {
-                  die("<p class='error'>Il paziente è già stato ricoverato da $cognome $nome</p>");
+                  die("<p class='error'>Il paziente è già stato ricoverato in $reparto da $medico</p>");
                }
             }
+            else {
+               gotoForm3();
+               exit;
+            }
 
-            gotoForm3();
-            exit;
          }
 
       } catch (PDOException $e) {
@@ -277,39 +350,27 @@
       try {
          $conn = connect();
 
-         // Controlla se il paziente esiste
-         $sql = "SELECT COUNT(*) as num
-                 FROM pazienti
-                 WHERE cf = :cf";
+         $nome = trim($_POST["nome"]);
+         $cognome = trim($_POST["cognome"]);
+         $sesso = strtoupper($_POST["sesso"]);
+         $email = trim($_POST["email"]);
+         $telefono = trim($_POST["telefono"]);
+
+         $sql = "INSERT pazienti (cf, nome, cognome, ddn, sesso, email, telefono)
+                 VALUES(:cf, :nome, :cognome, :ddn, :sesso, :email, :telefono)";
          $stmt = $conn->prepare($sql);
          $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
+         $stmt->bindParam(":nome", $nome, PDO::PARAM_STR, 100);
+         $stmt->bindParam(":cognome", $cognome, PDO::PARAM_STR, 100);
+         $stmt->bindParam(":ddn", $_POST["ddn"]);
+         $stmt->bindParam(":sesso", $sesso, PDO::PARAM_STR, 1);
+         $stmt->bindParam(":email", $email, PDO::PARAM_STR, 100);
+         $stmt->bindParam(":telefono", $telefono, PDO::PARAM_STR, 20);
          $stmt->execute();
 
-         if($stmt->fetch()["num"] == 0) { // Non esiste
-            $nome = trim($_POST["nome"]);
-            $cognome = trim($_POST["cognome"]);
-            $email = trim($_POST["email"]);
-            $telefono = trim($_POST["telefono"]);
+         gotoForm3();
+         exit;
 
-            $sql = "INSERT pazienti (cf, nome, cognome, ddn, sesso, email, telefono)
-                    VALUES(:cf, :nome, :cognome, :ddn, :sesso, :email, :telefono)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(":cf", $_POST["cf"], PDO::PARAM_STR, 16);
-            $stmt->bindParam(":nome", $nome, PDO::PARAM_STR, 100);
-            $stmt->bindParam(":cognome", $cognome, PDO::PARAM_STR, 100);
-            $stmt->bindParam(":ddn", $_POST["ddn"]);
-            $stmt->bindParam(":sesso", $_POST["sesso"], PDO::PARAM_STR, 1);
-            $stmt->bindParam(":email", $email, PDO::PARAM_STR, 100);
-            $stmt->bindParam(":telefono", $telefono, PDO::PARAM_STR, 20);
-            $stmt->execute();
-
-            gotoForm3();
-            exit;
-         }
-         else {
-            gotoForm3();
-            exit;
-         }
       } catch (PDOException $e) {
          die("<p class='error'>Qualcosa è andato storto</p>");
       }
@@ -332,16 +393,41 @@
       try {
          $conn = connect();
 
-         $sql = "INSERT ricoveri (data_inizio, motivo, cod_medico, cod_paziente)
-                 VALUES(NOW(), :motivo, :cod_medico, :cod_paziente)";
-         $stmt = $conn->prepare($sql);
-         $stmt->bindParam(":motivo", $_POST["note"], PDO::PARAM_STR, 500);
-         $stmt->bindParam(":cod_medico", $_SESSION["id"], PDO::PARAM_INT);
-         $stmt->bindParam(":cod_paziente", $_POST["cf"], PDO::PARAM_STR, 16);
-         $stmt->execute();
+         $conn->beginTransaction();
+
+         // Controlla che non sia già ricoverato e che ci siano posti liberi
+         if(empty(controlloRicoveri($_POST["cf"])) || controlloPosti() != 0) {
+
+            $sql = "SELECT cod_reparto FROM posti WHERE id = :id_posto";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(":id_posto", $_POST["posto"], PDO::PARAM_INT);
+            $stmt->execute();
+
+            if($_SESSION["reparto"] == $stmt->fetch()["cod_reparto"]) {
+               $sql = "INSERT ricoveri (data_inizio, motivo, cod_medico, cod_paziente, cod_posto)
+                       VALUES(NOW(), :motivo, :cod_medico, :cod_paziente, :cod_posto)";
+               $stmt = $conn->prepare($sql);
+               $stmt->bindParam(":motivo", $_POST["note"], PDO::PARAM_STR, 500);
+               $stmt->bindParam(":cod_medico", $_SESSION["id"], PDO::PARAM_INT);
+               $stmt->bindParam(":cod_paziente", $_POST["cf"], PDO::PARAM_STR, 16);
+               $stmt->bindParam(":cod_posto", $_POST["posto"], PDO::PARAM_INT);
+               $stmt->execute();
+            }
+            else {
+               die("<p class='error'>La stanza non appartiene al tuo reparto</p>");
+            }
+
+         }
+         else {
+            die("<p class='error'>Il paziente è già stato ricoverato</p>");
+         }
+
+         $conn->commit();
+
 
          header("Location: ../index.php");
       } catch (PDOException $e) {
+         $conn->rollBack();
          echo $e->getMessage();
          die("<p class='error'>Si è verificato un errore nell'inserimento del ricovero</p>");
       }

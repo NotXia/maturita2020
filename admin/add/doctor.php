@@ -125,7 +125,7 @@
                   </div>
 
                   <div class="form-group">
-                     <input name="submit" type="submit" value="Inserisci">
+                     <input name="submit" class="btn btn-secondary" type="submit" value="Inserisci">
                   </div>
                </form>
 

@@ -81,8 +81,43 @@
                            foreach ($res as $row) {
                               $id_reparto = $row["id"];
                               $denom = $row["denominazione"];
-                              $posti_tot = $row["posti_totali"];
 
+                              $sql = "SELECT id, nome
+                                      FROM posti
+                                      WHERE cod_reparto = :id_reparto";
+                              $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);
+                              $stmt->execute();
+                              $res_posti = $stmt->fetchAll();
+                              $posti_tot = count($res_posti);
+                              $posti = "";
+                              foreach ($res_posti as $row) {
+                                 $posti = $posti . ":" . $row["id"] . ";" . $row["nome"];
+                              }
+
+                              // Estrae i posti occupati
+                              $sql = "SELECT id
+                                      FROM posti
+                                      WHERE cod_reparto = :id_reparto AND
+                                            id NOT IN (SELECT cod_posto
+                                                   FROM posti, ricoveri
+                                                   WHERE cod_posto = posti.id AND
+                                                         cod_reparto = :id_reparto AND
+                                                         data_fine IS NULL)";
+                              $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
+                              $stmt->execute();
+                              $res = $stmt->fetchAll();
+                              $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);
+                              $stmt->execute();
+                              $res_posti_occupati = $stmt->fetchAll();
+                              $posti_occupati = "";
+                              foreach ($res_posti_occupati as $row) {
+                                 $posti_occupati = $posti_occupati . ":" . $row["id"];
+                              }
+
+                              // Estrazione dei medici del reparto
                               $sql = "SELECT nome, cognome
                                       FROM medici
                                       WHERE cod_reparto = :id_reparto
@@ -91,7 +126,6 @@
                               $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);
                               $stmt->execute();
                               $res_doc = $stmt->fetchAll();
-
                               $medici = "";
                               foreach($res_doc as $row_d) {
                                  $medici = $medici . $row_d["cognome"] . " " . $row_d["nome"] . "<br>";
@@ -115,7 +149,7 @@
                                           $del
                                        </td>
                                        <td style='text-align:center;' class='align-middle'>
-                                          <a href='#' data-toggle='modal' class='click-modify' data-id='$id_reparto' data-denominazione='$denom' data-posti='$posti_tot'>Modifica</a>
+                                          <a href='#' data-toggle='modal' class='click-modify' data-id='$id_reparto' data-denominazione='$denom' data-posti='$posti' data-posti_occupati='$posti_occupati'>Modifica</a>
                                        </td>
                                     </tr>";
 
@@ -150,11 +184,12 @@
                               <div class='modal-header'>
                                  <h5 style='margin:8px;'>Modifica</h5>
                               </div>
-                              <form action="modify.php" method="POST">
+                              <form id="in_posti" action="modify.php" method="POST">
+                                 <input id="in_id_modify" type="hidden" name="id">
                                  <div class='modal-body'>
-                                    <input id="in_id" type="hidden" name="id">
-                                    <input id="in_denominazione" type="text" name="denominazione" placeholder="Denominazione" required><br><br>
-                                    <input id="in_posti" type="number" min="0" name="posti_totali" placeholder="Posti totali" required>
+                                    <button type="button" class="btn btn-light btn-sm" name="button" onclick="addRow()">Aggiungi</button><br>
+                                    <hr>
+                                    <input id="in_denominazione" type="text" name="denominazione" placeholder="Denominazione" required><br>
                                  </div>
                                  <div class='modal-footer'>
                                     <a class='btn btn-secondary' style='color:white;' data-dismiss='modal'>Annulla</a>
@@ -186,18 +221,77 @@
       });
 
       $(document).on("click", ".click-modify", function () {
+
          var id = $(this).data('id');
          var denom = $(this).data('denominazione');
-         var posti = $(this).data('posti');
-         $(".modal-body #in_id").attr("value", id);
-         $(".modal-body #in_denominazione").attr("value", denom);
-         $(".modal-body #in_posti").attr("value", posti);
+         var posti = $(this).data('posti').split(":");
+         var posti_occupati = $(this).data('posti_occupati').split(":");
+         $("#in_id_modify").attr("value", id);
+         $("#in_denominazione").attr("value", denom);
+
+         for(var i=1; i<posti.length; i++) {
+            var parti = posti[i].split(";");
+
+            disabled = false;
+            if(posti_occupati.indexOf(parti[0]) == -1) {
+               disabled = true;
+            }
+
+            $("<div></div>")
+               .attr("id", "div_posto"+i)
+               .appendTo(" #in_posti");
+
+            $("<br>")
+               .appendTo(" #"+"div_posto"+i);
+
+            $("<input type='text'>")
+               .attr("id", "in_posto"+i)
+               .attr("class", "align-middle")
+               .attr("name", "posti_old[" + parti[0] + "]")
+               .attr("value", parti[1])
+               .appendTo(" #"+"div_posto"+i);
+
+            $("<span>&nbsp</span>")
+               .appendTo(" #"+"div_posto"+i);
+
+            $("<button type='button'>Elimina</button>")
+               .attr("id", "btn_posto"+i)
+               .attr("class", "btn btn-outline-danger btn-sm align-middle")
+               .attr("onclick", "delete_row(" + i +")")
+               .attr("disabled", disabled)
+               .appendTo(" #"+"div_posto"+i);
+         }
 
          $('#modify').modal('show');
       });
 
       $(document).on('hidden.bs.modal', function () {
          $(this).find('form').trigger('reset');
+         $("#in_posti").empty();
+      });
+
+      function delete_row(index) {
+         document.getElementById("div_posto" + index).style.display = "none";
+         document.getElementById("in_posto" + index).value = null;
+      }
+
+      function addRow() {
+         var row = document.createElement("input");
+         row.type = "text";
+         row.name = "posti_new[]";
+         row.placeholder = "Nome";
+
+         document.getElementById("in_posti").appendChild(document.createElement("br"));
+         document.getElementById("in_posti").appendChild(row);
+         document.getElementById("in_posti").appendChild(document.createElement("br"));
+      }
+
+      $('#in_posti').on('keyup keypress', function(e) {
+         var keyCode = e.keyCode || e.which;
+         if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+         }
       });
    </script>
 

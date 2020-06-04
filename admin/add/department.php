@@ -70,12 +70,14 @@
                   </div>
 
                   <div class="form-group">
-                     <label for="posti">Posti totali</label><br>
-                     <input id="posti" name="posti" type="number" min="0" value="<?php if(!empty($_POST['posti'])) echo htmlentities($_POST['posti']); ?>" required>
+                     <label>Posti</label><br>
+                     <div id="posti">
+                     </div>
+                     <button type="button" class="btn btn-light" name="button" onclick="addRow()">Aggiungi</button><br><br>
                   </div>
 
                   <div class="form-group">
-                     <input name="submit" type="submit" value="Inserisci">
+                     <input name="submit" class="btn btn-secondary" type="submit" value="Inserisci">
                   </div>
                </form>
 
@@ -83,7 +85,7 @@
                   if(isset($_POST["submit"])) {
 
                      // Verifica campi obbligatori
-                     if(empty($_POST["denom"]) || empty($_POST["posti"])) {
+                     if(empty($_POST["denom"])) {
                         die("<p class='error'>Alcuni campi non sono stati inseriti</p>");
                      }
 
@@ -92,15 +94,30 @@
 
                         $denominazione = trim($_POST["denom"]);
 
-                        $sql = "INSERT reparti (denominazione, posti_totali) VALUES(:denominazione, :posti)";
+                        $conn->beginTransaction();
+
+                        $sql = "INSERT reparti (denominazione) VALUES(:denominazione)";
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(":denominazione", $denominazione, PDO::PARAM_STR, 100);
-                        $stmt->bindParam(":posti", $_POST["posti"], PDO::PARAM_INT);
                         $stmt->execute();
+
+                        $id_reparto = $conn->lastInsertId();
+
+                        foreach($_POST["posti"] as $i=>$nome_posto) {
+                           $nome_posto = trim($nome_posto);
+
+                           $sql = "INSERT posti (nome, cod_reparto) VALUES(:nome, :id_reparto)";
+                           $stmt = $conn->prepare($sql);
+                           $stmt->bindParam(":nome", $nome_posto, PDO::PARAM_STR, 100);
+                           $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);
+                           $stmt->execute();
+                        }
+
+                        $conn->commit();
 
                         header("Location: index.php");
                      } catch (PDOException $e) {
-                        echo $e->getMessage();
+                        $conn->rollBack();
                         die("<p class='error'>Qualcosa non ha funzionato</p>");
                      }
 
@@ -111,5 +128,18 @@
          </div>
       </div>
    </body>
+
+   <script type="text/javascript">
+      function addRow() {
+         var row = document.createElement("input");
+         row.type = "text";
+         row.name = "posti[]";
+         row.placeholder = "Nome";
+
+         document.getElementById("posti").appendChild(row);
+         document.getElementById("posti").appendChild(document.createElement("br"));
+         document.getElementById("posti").appendChild(document.createElement("br"));
+      }
+   </script>
 
 </html>

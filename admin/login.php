@@ -53,11 +53,11 @@
 
                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                   <div class="form-group">
-                     <input name="username" type="text" class="form-control" value="<?php if(!empty($_POST['username'])) echo $_POST['username']; ?>" placeholder="username">
+                     <input name="username" type="text" class="form-control" value="<?php if(!empty($_POST['username'])) echo $_POST['username']; ?>" placeholder="username" required>
                   </div>
 
                   <div class="form-group">
-                     <input name="password" type="password" class="form-control" placeholder="password">
+                     <input name="password" type="password" class="form-control" placeholder="password" required>
                   </div>
 
                   <input name="submit" type="submit" value="Accedi" class="btn btn-light">
