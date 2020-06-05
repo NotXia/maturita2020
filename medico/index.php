@@ -135,7 +135,7 @@
          <div class="row p-4">
             <div class="col-xl-4 col-lg-5 col-md-8 col-sm-10 mx-auto text-center">
                <a class="btn btn-secondary task" href="./patient/add.php">Inserisci ricovero</a><br><br>
-               <a class="btn btn-secondary task" href="./add/patient.php">Inserisci visita</a>
+               <a class="btn btn-secondary task" href="./patient/index.php">Visualizza pazienti</a>
             </div>
          </div>
       </div>

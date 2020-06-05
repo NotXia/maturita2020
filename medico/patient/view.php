@@ -126,12 +126,11 @@
                               $sql = "SELECT pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente, ddn, sesso, email, telefono,
                                              data_inizio, motivo, posti.nome AS nome_posto,
                                              medici.nome AS nome_medico, medici.cognome AS cognome_medico
-                                      FROM pazienti, ricoveri, posti, medici, visite
+                                      FROM pazienti, ricoveri, posti, medici
                                       WHERE cod_paziente = pazienti.cf AND
                                             cod_posto = posti.id AND
                                             ricoveri.cod_medico = medici.id AND
-                                            cod_ricovero = ricoveri.id AND
-                                            cod_ricovero = :id_ricovero";
+                                            ricoveri.id = :id_ricovero";
                               $stmt = $conn->prepare($sql);
                               $stmt->bindParam(":id_ricovero", $_GET["id"], PDO::PARAM_INT);
                               $stmt->execute();
