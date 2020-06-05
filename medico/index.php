@@ -67,6 +67,9 @@
                   <a class="nav-link">Home</a>
                </li>
                <li class="nav-item">
+                  <a class="nav-link">Visite</a>
+               </li>
+               <li class="nav-item">
                   <a class="nav-link" href="../logout.php">Logout</a>
                </li>
             </ul>
@@ -81,7 +84,7 @@
                <h5>La tua giornata</h5>
                <hr>
                <h6 style='margin:0'>Pazienti da visitare</h6>
-               <form action="add/visit.php" method="POST">
+               <form action="visit/add.php" method="POST">
                   <?php
                   try {
                      $conn = connect();
@@ -128,7 +131,7 @@
 
          <div class="row p-4">
             <div class="col-xl-4 col-lg-5 col-md-8 col-sm-10 mx-auto text-center">
-               <a class="btn btn-secondary task" href="./add/patient.php">Inserisci ricovero</a><br><br>
+               <a class="btn btn-secondary task" href="./patient/add.php">Inserisci ricovero</a><br><br>
                <a class="btn btn-secondary task" href="./add/patient.php">Inserisci visita</a>
             </div>
          </div>

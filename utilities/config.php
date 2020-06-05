@@ -5,4 +5,6 @@
    define ("DB_USER", "root");
    define ("DB_PSW", "");
 
+   define("FOLDER", "maturita2020/")
+
  ?>

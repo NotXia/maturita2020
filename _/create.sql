@@ -59,7 +59,7 @@ CREATE TABLE ricoveri (
 
 CREATE TABLE farmaci (
    id INT AUTO_INCREMENT PRIMARY KEY,
-   denominazione VARCHAR(100) NOT NULL,
+   denominazione VARCHAR(100) NOT NULL UNIQUE,
    descrizione VARCHAR(500),
    qta INT NOT NULL DEFAULT 0,
    CHECK (qta >= 0)
@@ -70,7 +70,9 @@ CREATE TABLE prescrizioni (
    posologia VARCHAR(500) NOT NULL,
    qta INT NOT NULL,
    qta_ritirata INT NOT NULL DEFAULT 0,
+   cod_visita INT NOT NULL,
    cod_farmaco INT NOT NULL,
+   FOREIGN KEY (cod_visita) REFERENCES visite(id) ON DELETE RESTRICT ON UPDATE CASCADE,
    FOREIGN KEY (cod_farmaco) REFERENCES farmaci(id) ON DELETE RESTRICT ON UPDATE CASCADE,
    CHECK (qta > 0 AND qta_ritirata <= qta)
 );
