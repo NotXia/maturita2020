@@ -89,44 +89,44 @@
                <h6 style='margin:0'>Pazienti da visitare</h6>
                <form action="visit/add.php" method="POST">
                   <?php
-                  try {
-                     $conn = connect();
-                     $sql = "SELECT ricoveri.id AS id_ricovero, pazienti.nome AS nome_paziente, pazienti.cognome, pazienti.cf, posti.nome AS nome_posto
-                     FROM ricoveri, pazienti, posti
-                     WHERE cod_paziente = pazienti.cf AND
-                     cod_posto = posti.id AND
-                     cod_medico = :id_medico AND
-                     data_fine IS NULL AND
-                     cod_paziente NOT IN (SELECT cod_paziente
-                        FROM ricoveri, visite
-                        WHERE cod_ricovero = ricoveri.id AND
-                        DATE(orario) = DATE(NOW()))
-                        ORDER BY pazienti.cognome, pazienti.nome";
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
-                        $stmt->execute();
-                        $res = $stmt->fetchAll();
+                     try {
+                        $conn = connect();
+                        $sql = "SELECT ricoveri.id AS id_ricovero, pazienti.nome AS nome_paziente, pazienti.cognome, pazienti.cf, posti.nome AS nome_posto
+                                FROM ricoveri, pazienti, posti
+                                WHERE cod_paziente = pazienti.cf AND
+                                      cod_posto = posti.id AND
+                                      cod_medico = :id_medico AND
+                                      data_fine IS NULL AND
+                                      cod_paziente NOT IN (SELECT cod_paziente
+                                                           FROM ricoveri, visite
+                                                           WHERE cod_ricovero = ricoveri.id AND
+                                                                 DATE(orario) = DATE(NOW()))
+                                                           ORDER BY pazienti.cognome, pazienti.nome";
+                           $stmt = $conn->prepare($sql);
+                           $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
+                           $stmt->execute();
+                           $res = $stmt->fetchAll();
 
-                        $zero_visite = true;
-                        foreach($res as $row) {
-                           $zero_visite = false;
-                           $id = $row["id_ricovero"];
-                           $cf = $row["cf"];
-                           $nome = $row["nome_paziente"];
-                           $cognome = $row["cognome"];
-                           $posto = $row["nome_posto"];
-                           echo "<button type='submit' style='margin: 5px;width:100%' class='btn btn-outline-secondary' value='$id' name='id_ricovero'>
-                              <span class='float-left'>$cognome $nome</span> <span class='float-right'>$posto</span>
-                           </button><br>";
+                           $zero_visite = true;
+                           foreach($res as $row) {
+                              $zero_visite = false;
+                              $id = $row["id_ricovero"];
+                              $cf = $row["cf"];
+                              $nome = $row["nome_paziente"];
+                              $cognome = $row["cognome"];
+                              $posto = $row["nome_posto"];
+                              echo "<button type='submit' style='margin: 5px;width:100%' class='btn btn-outline-secondary' value='$id' name='id_ricovero'>
+                                       <span class='float-left'>$cognome $nome</span> <span class='float-right'>$posto</span>
+                                    </button><br>";
+                           }
+                           if($zero_visite) {
+                              echo "<p style='margin:0'>Non ci sono pazienti da visitare</p>";
+                           }
+                           $conn = null;
+                        } catch (PDOException $e) {
+                           $conn = null;
+                           die("<br><span class='error'>Non è stato possibile estrare le visite di oggi</span>");
                         }
-                        if($zero_visite) {
-                           echo "<p style='margin:0'>Non ci sono pazienti da visitare</p>";
-                        }
-                        $conn = null;
-                     } catch (PDOException $e) {
-                        $conn = null;
-                        die("<br><span class='error'>Non è stato possibile estrare le visite di oggi</span>");
-                     }
                      ?>
                </form>
             </div>

@@ -133,7 +133,11 @@
                                  }
 
                                  echo "<tr $me>
-                                          <td class='text-center'>$data</td> <td>$nominativo_paziente</td> <td class='text-center'>$posto</td> <td>$nominativo_medico</td> <td class='text-center'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
+                                          <td class='text-center'>$data</td>
+                                          <td class='text-center'>$nominativo_paziente</td>
+                                          <td class='text-center'>$posto</td>
+                                          <td class='text-center'>$nominativo_medico</td> 
+                                          <td class='text-center'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
                                        </tr>";
                               }
                            } catch (PDOException $e) {
