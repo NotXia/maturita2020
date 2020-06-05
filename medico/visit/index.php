@@ -105,9 +105,11 @@
                                             cod_posto = posti.id AND
                                             cod_paziente = pazienti.cf AND
                                             visite.cod_medico = medici.id AND
-                                            data_fine IS NULL
+                                            data_fine IS NULL AND
+                                            medici.cod_reparto = :id_reparto
                                       ORDER BY orario DESC";
                               $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
                               $stmt->execute();
                               $res = $stmt->fetchAll();
 
@@ -119,8 +121,8 @@
                                  $nominativo_medico = $row["cognome_medico"] . " " . $row["nome_medico"];
 
                                  echo "<tr>
-                                 <td class='text-center'>$data</td> <td>$nominativo_paziente</td> <td class='text-center'>$posto</td> <td>$nominativo_medico</td> <td><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
-                                 </tr>";
+                                          <td class='text-center'>$data</td> <td>$nominativo_paziente</td> <td class='text-center'>$posto</td> <td>$nominativo_medico</td> <td class='text-center'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
+                                       </tr>";
                               }
                            } catch (PDOException $e) {
                               die("<p class='error'>Non è stato possibile estrarre le visite</p>");

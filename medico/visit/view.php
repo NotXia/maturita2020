@@ -202,12 +202,23 @@
                         $nominaivo_medico = $res["cognome"] . " " . $res["nome"];
 
                         echo "<p><b>Orario</b> $orario</p>
-                              <p><b>Medico</b> $nominaivo_medico</p>
-                              <p><b>Pressione</b> $pressione mmHg</p>
-                              <p><b>Temperatura</b> $temperatura"."°C</p>
-                              <p><b>Saturazione</b> $saturazione%</p>
-                              <p><b>Battito</b> $battito bpm</p>
-                              <p><b>Note</b><br>$note</p>";
+                              <p><b>Medico</b> $nominaivo_medico</p><hr>";
+
+                        if(!empty($pressione)) {
+                           echo "<p><b>Pressione</b> $pressione mmHg</p>";
+                        }
+                        if(!empty($temperatura)) {
+                           echo "<p><b>Temperatura</b> $temperatura"."°C</p>";
+                        }
+                        if(!empty($saturazione)) {
+                           echo "<p><b>Saturazione</b> $saturazione%</p>";
+                        }
+                        if(!empty($battito)) {
+                           echo "<p><b>Battito</b> $battito bpm</p>";
+                        }
+                        if(!empty($note)) {
+                           echo "<p><b>Note</b><br>$note</p>";
+                        }
                      }
                      else {
                         die("<br><span class='error'>Non è stato possibile trovare la visita</span>");
@@ -224,7 +235,7 @@
 
                      if(!empty($res)) {
                         ?>
-                        <br>
+                        <hr>
                         <h4>Prescrizioni</h4>
                         <div class="table table-responsive-lg">
                            <table class="table-bordered" align="center">

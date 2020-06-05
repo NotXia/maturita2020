@@ -342,6 +342,8 @@
 
          $conn->beginTransaction();
 
+         $note = trim($_POST["note"]);
+
          $sql = "INSERT visite (orario, pressione, temperatura, saturazione, note, battito, cod_ricovero, cod_medico)
                  VALUES(NOW(), :pressione, :temperatura, :saturazione, :note, :battito, :cod_ricovero, :cod_medico)";
          $stmt = $conn->prepare($sql);
@@ -349,7 +351,7 @@
          $stmt->bindParam(":temperatura", $_POST["temperatura"]);
          $stmt->bindParam(":saturazione", $_POST["saturazione"]);
          $stmt->bindParam(":battito", $_POST["battito"]);
-         $stmt->bindParam(":note", $_POST["note"]);
+         $stmt->bindParam(":note", $note);
          $stmt->bindParam(":cod_ricovero", $_POST["id_ricovero"]);
          $stmt->bindParam(":cod_medico", $_SESSION["id"]);
          $stmt->execute();
