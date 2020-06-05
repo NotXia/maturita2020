@@ -67,7 +67,7 @@
                   <a class="nav-link">Home</a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link">Visite</a>
+                  <a class="nav-link" href="visit/">Visite</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="../logout.php">Logout</a>
