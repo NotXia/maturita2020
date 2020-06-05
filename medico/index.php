@@ -64,10 +64,13 @@
          <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                <li class="nav-item active">
-                  <a class="nav-link">Home</a>
+                  <a class="nav-link" href="index.php">Home</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="visit/">Visite</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="patient/">Pazienti</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="../logout.php">Logout</a>

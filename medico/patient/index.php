@@ -73,11 +73,11 @@
                <li class="nav-item">
                   <a class="nav-link" href="../">Home</a>
                </li>
-               <li class="nav-item active">
-                  <a class="nav-link" href="index.php">Visite</a>
-               </li>
                <li class="nav-item">
-                  <a class="nav-link" href="../patient/">Pazienti</a>
+                  <a class="nav-link" href="../visit">Visite</a>
+               </li>
+               <li class="nav-item active">
+                  <a class="nav-link" href="index.php">Pazienti</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="../../logout.php">Logout</a>
@@ -90,42 +90,42 @@
       <div class="container">
          <div class="row text-black">
             <div class="col-xl-8 col-lg-8 col-md-10 col-sm-12 mx-auto text-center p-4">
-               <h1 class="display-4 py-2">Storico visite</h1>
-               <p>Di seguito le visite effettuate ai pazienti attualmente ricoverati nel reparto</p>
+               <h1 class="display-4 py-2">Pazienti ricoverati</h1>
+               <p>Di seguito i pazienti attualmente ricoverati nel reparto</p>
 
                <div class="table-responsive-lg" align="center">
-                  <form action="view.php" method="GET">
+                  <form action="../visit/add.php" method="POST">
                      <table class="table table-bordered">
                         <tr style="text-align:center;">
-                           <th>Data</th> <th>Paziente</th> <th>Stanza</th> <th>Medico</th>
+                           <th>Cognome</th> <th>Nome</th> <th>Stanza</th> <th>Medico</th> <th>Data ricovero</th>
                         </tr>
 
                         <?php
                            try {
                               $conn = connect();
-                              $sql = "SELECT visite.id AS id_visita, orario,
+                              $sql = "SELECT ricoveri.id AS id_ricovero, data_inizio,
                                              pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente,
                                              posti.nome AS nome_posto,
                                              medici.id AS id_medico, medici.nome AS nome_medico, medici.cognome AS cognome_medico
-                                      FROM visite, ricoveri, posti, pazienti, medici
-                                      WHERE cod_ricovero = ricoveri.id AND
+                                      FROM pazienti, ricoveri, posti, medici
+                                      WHERE cod_paziente = pazienti.cf AND
                                             cod_posto = posti.id AND
-                                            cod_paziente = pazienti.cf AND
-                                            visite.cod_medico = medici.id AND
+                                            cod_medico = medici.id AND
                                             data_fine IS NULL AND
                                             medici.cod_reparto = :id_reparto
-                                      ORDER BY orario DESC";
+                                      ORDER BY pazienti.cognome, pazienti.nome";
                               $stmt = $conn->prepare($sql);
                               $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
                               $stmt->execute();
                               $res = $stmt->fetchAll();
 
                               foreach($res as $row) {
-                                 $id_visita = $row["id_visita"];
-                                 $data = date("d/m/Y H:i", strtotime($row["orario"]));
-                                 $nominativo_paziente = $row["cognome_paziente"] . " " . $row["nome_paziente"];
+                                 $id_ricovero = $row["id_ricovero"];
+                                 $cognome = $row["cognome_paziente"];
+                                 $nome = $row["nome_paziente"];
                                  $posto = $row["nome_posto"];
                                  $nominativo_medico = $row["cognome_medico"] . " " . $row["nome_medico"];
+                                 $data = date("d/m/Y H:i", strtotime($row["data_inizio"]));
 
                                  $me = "";
                                  if($row["id_medico"] == $_SESSION["id"]) {
@@ -133,7 +133,13 @@
                                  }
 
                                  echo "<tr $me>
-                                          <td class='text-center'>$data</td> <td>$nominativo_paziente</td> <td class='text-center'>$posto</td> <td>$nominativo_medico</td> <td class='text-center'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
+                                          <td class='text-center'>$cognome</td>
+                                          <td class='text-center'>$nome</td>
+                                          <td class='text-center'>$posto</td>
+                                          <td class='text-center'>$nominativo_medico</td>
+                                          <td class='text-center'>$data</td>
+                                          <td class='text-center align-middle'><a href='view.php?id=$id_ricovero' class='btn btn-outline-primary btn-sm'>i</a></td>
+                                          <td class='text-center align-middle'><button type='submit' name='id_ricovero' value='$id_ricovero' class='btn btn-outline-primary btn-sm'>Visita</button></td>
                                        </tr>";
                               }
                            } catch (PDOException $e) {
@@ -142,6 +148,7 @@
                         ?>
 
                      </table>
+
                   </form>
                </div>
 

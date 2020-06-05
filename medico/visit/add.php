@@ -98,7 +98,13 @@
          <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                <li class="nav-item">
-                  <a class="nav-link" href="../index.php">Home</a>
+                  <a class="nav-link" href="../">Home</a>
+               </li>
+               <li class="nav-item active">
+                  <a class="nav-link" href="index.php">Visite</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../patient/">Pazienti</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="../../logout.php">Logout</a>
@@ -183,7 +189,7 @@
          <div class="row text-black">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mx-auto text-center">
 
-               <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+               <form id="form_visita" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                   <input type="hidden" name="id_ricovero" value="<?php if(!empty($_POST["id_ricovero"])) echo htmlentities($_POST["id_ricovero"]); ?>">
                   <h3>Misurazioni</h3>
                   <div class="form-group">
@@ -224,8 +230,24 @@
                   </div>
 
                   <div class="form-group">
-                     <input type="submit" class="btn btn-success" name="submit" value="Conferma">
+                     <button type="button" data-toggle='modal' class='btn btn-success click-confirm'>Salva</button>
                   </div>
+
+                  <div class='modal' id='confirm' tabindex='-1' role='dialog' aria-labelledby='del$id' aria-hidden='true'>
+                     <div class='modal-dialog' role='document'>
+                        <div class='modal-content'>
+                           <div class='modal-body'>
+                              <input id="in_id" type="hidden" name="id">
+                              <h5 style='margin:8px;'>Terminare la visita?</h5>
+                           </div>
+                           <div class='modal-footer'>
+                              <a class='btn btn-secondary' style='color:white;' data-dismiss='modal'>No</a>
+                              <input class='btn btn-success' style='color:white;' type="submit" name="submit" value="Si">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
                </form>
 
             </div>
@@ -236,6 +258,12 @@
    </body>
 
    <script type="text/javascript">
+      $(document).on("click", ".click-confirm", function () {
+         var id = $(this).data('id');
+
+         $('#confirm').modal('show');
+      });
+
       index = 0;
 
          <?php

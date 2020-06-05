@@ -24,11 +24,11 @@
 
       // Verifica se è un paziente del reparto
       $sql = "SELECT cod_reparto
-              FROM visite, medici
+              FROM ricoveri, medici
               WHERE cod_medico = medici.id AND
-                    visite.id = :id_visite";
+                    ricoveri.id = :id_ricovero";
       $stmt = $conn->prepare($sql);
-      $stmt->bindParam(":id_visite", $_GET["id"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_ricovero", $_GET["id"], PDO::PARAM_INT);
       $stmt->execute();
 
       if($stmt->fetch()["cod_reparto"] != $_SESSION["reparto"]) {
@@ -63,8 +63,9 @@
             padding: 10px;
          }
 
-         .prescrizione {
-            margin: 5px;
+         .visita {
+            margin: 10px;
+            overflow: auto;
          }
       </style>
 
@@ -97,11 +98,11 @@
                <li class="nav-item">
                   <a class="nav-link" href="../">Home</a>
                </li>
-               <li class="nav-item active">
-                  <a class="nav-link" href="index.php">Visite</a>
-               </li>
                <li class="nav-item">
-                  <a class="nav-link" href="../patient/">Pazienti</a>
+                  <a class="nav-link" href="../visit">Visite</a>
+               </li>
+               <li class="nav-item active">
+                  <a class="nav-link" href="index.php">Pazienti</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="../../logout.php">Logout</a>
@@ -114,10 +115,9 @@
       <div class="container">
          <div class="row text-black">
             <div class="col-xl-7 col-lg-8 col-md-10 col-sm-12 mx-auto text-center p-4">
-               <h1 class="display-4 py-2">Visita</h1>
+               <h1 class="display-4 py-2">Paziente</h1>
 
                <div class="border border-secondary rounded p-3">
-                  <h5>Dati paziente</h5>
                   <div class="table-responsive">
                      <table align="center">
                         <?php
@@ -131,9 +131,9 @@
                                             cod_posto = posti.id AND
                                             ricoveri.cod_medico = medici.id AND
                                             cod_ricovero = ricoveri.id AND
-                                            visite.id = :id_visita";
+                                            cod_ricovero = :id_ricovero";
                               $stmt = $conn->prepare($sql);
-                              $stmt->bindParam(":id_visita", $_GET["id"], PDO::PARAM_INT);
+                              $stmt->bindParam(":id_ricovero", $_GET["id"], PDO::PARAM_INT);
                               $stmt->execute();
                               $res = $stmt->fetch();
 
@@ -189,84 +189,79 @@
                <?php
                   try {
                      $conn = connect();
-                     $sql = "SELECT orario, pressione, temperatura, saturazione, battito, note, nome, cognome
+                     $sql = "SELECT visite.id AS id_visita, orario, nome, cognome
                              FROM visite, medici
                              WHERE cod_medico = medici.id AND
-                                   visite.id = :id_visita";
+                                   cod_ricovero = :id_ricovero
+                             ORDER BY orario DESC";
                      $stmt = $conn->prepare($sql);
-                     $stmt->bindParam(":id_visita", $_GET["id"], PDO::PARAM_INT);
-                     $stmt->execute();
-                     $res = $stmt->fetch();
-
-                     if(!empty($res)) {
-                        $orario = date("d/m/Y H:i", strtotime($res["orario"]));
-                        $pressione = $res["pressione"];
-                        $temperatura = $res["temperatura"];
-                        $saturazione = $res["saturazione"];
-                        $battito = $res["battito"];
-                        $note = nl2br($res["note"]);
-                        $nominaivo_medico = $res["cognome"] . " " . $res["nome"];
-
-                        echo "<p><b>Orario</b> $orario</p>
-                              <p><b>Medico</b> $nominaivo_medico</p><hr>";
-
-                        if(!empty($pressione)) {
-                           echo "<p><b>Pressione</b> $pressione mmHg</p>";
-                        }
-                        if(!empty($temperatura)) {
-                           echo "<p><b>Temperatura</b> $temperatura"."°C</p>";
-                        }
-                        if(!empty($saturazione)) {
-                           echo "<p><b>Saturazione</b> $saturazione%</p>";
-                        }
-                        if(!empty($battito)) {
-                           echo "<p><b>Battito</b> $battito bpm</p>";
-                        }
-                        if(!empty($note)) {
-                           echo "<p><b>Note</b><br>$note</p>";
-                        }
-                     }
-                     else {
-                        die("<br><span class='error'>Non è stato possibile trovare la visita</span>");
-                     }
-
-                     $sql = "SELECT posologia, prescrizioni.qta AS qta, qta_ritirata, denominazione
-                             FROM prescrizioni, farmaci
-                             WHERE cod_farmaco = farmaci.id AND
-                                   cod_visita = :id_visita";
-                     $stmt = $conn->prepare($sql);
-                     $stmt->bindParam(":id_visita", $_GET["id"], PDO::PARAM_INT);
+                     $stmt->bindParam(":id_ricovero", $_GET["id"], PDO::PARAM_INT);
                      $stmt->execute();
                      $res = $stmt->fetchAll();
 
                      if(!empty($res)) {
                         ?>
-                        <hr>
-                        <h4>Prescrizioni</h4>
-                        <div class="table table-responsive-lg">
-                           <table class="table-bordered" align="center">
-                              <tr>
-                                 <th>Farmaco</th> <th>Posologia</th> <th>Quantità</th> <th>Quantità ritirata</th>
-                              </tr>
-                        <?php
-                        foreach($res as $row) {
-                           $posologia = nl2br($row["posologia"]);
-                           $qta = $row["qta"];
-                           $qta_ritirata = $row["qta_ritirata"];
-                           $denominazione = $row["denominazione"];
-                           echo "<tr>
-                                    <td>$denominazione</td> <td style='text-align:left;'>$posologia</td> <td>$qta</td> <td>$qta_ritirata</td>
-                                 </tr>";
-                        }
-                        ?>
-                        </table>
-                     </div>
-                     <?php
-                     }
+                           <h5>Storico visite</h5>
+                           <form action="../visit/view.php" method="GET">
+                              <div class="table-responsive">
+                                 <table class="table table-bordered">
+                                    <?php
+                                    foreach($res as $row) {
+                                       $id_visita = $row["id_visita"];
+                                       $orario = date("d/m/Y H:i", strtotime($row["orario"]));
+                                       $nominaivo_medico = $row["cognome"] . " " . $row["nome"];
 
-                  } catch (PDOException $e) {
-                     $conn = null;
-                     echo $e->getMessage();
+                                       echo "<tr><td style='border-right: 1px solid white!important;'>";
+                                       echo "<p class='visita'><b>Orario</b> $orario</p>
+                                             <p><b>Medico</b> $nominaivo_medico</p>";
+
+                                       $sql = "SELECT posologia, prescrizioni.qta AS qta, qta_ritirata, denominazione
+                                       FROM prescrizioni, farmaci
+                                       WHERE cod_farmaco = farmaci.id AND
+                                       cod_visita = :id_visita";
+                                       $stmt = $conn->prepare($sql);
+                                       $stmt->bindParam(":id_visita", $id_visita, PDO::PARAM_INT);
+                                       $stmt->execute();
+                                       $res_farmaci = $stmt->fetchAll();
+
+                                       if(!empty($res_farmaci)) {
+                                          ?>
+                                          <div class="table-responsive">
+                                             <table class="table table-bordered">
+                                                <tr>
+                                                   <th>Farmaco</th> <th>Posologia</th> <th>Quantità</th> <th>Ritirata</th>
+                                                </tr>
+                                                <?php
+                                                foreach($res_farmaci as $row) {
+                                                   $farmaco = $row["denominazione"];
+                                                   $posologia = $row["posologia"];
+                                                   $qta = $row["qta"];
+                                                   $qta_ritirata = $row["qta_ritirata"];
+                                                   echo "<tr>
+                                                      <td>$farmaco</td> <td class='text-left'>$posologia</td> <td>$qta</td> <td>$qta_ritirata</td>
+                                                   </tr>";
+                                                }
+                                                ?>
+                                             </table>
+                                          </div>
+                                          <?php
+                                       }
+
+                                       echo "</td>
+                                       <td style='border-left: 1px solid white!important;' class='align-middle'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
+                                    </tr>";
+                                 }
+                                 ?>
+                              </table>
+                           </div>
+                        </form>
+                        <?php
+                     }
+                     else {
+                        die("<br><span class='error'>Il paziente non ha visite</span>");
+                     }
+                  }
+                  catch(PDOException $e) {
                      die("<br><span class='error'>Qualcosa non ha funzionato</span>");
                   }
                ?>

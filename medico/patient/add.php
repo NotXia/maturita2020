@@ -47,9 +47,9 @@
    }
 
    function controlloRicoveri($cf) {
-      // Controlla se il paziente è già ricoverato nel reparto
       try {
          $conn = connect();
+         // Controlla se il paziente è già ricoverato
          $sql = "SELECT medici.id AS id_medico, medici.nome, medici.cognome, denominazione
                  FROM ricoveri, medici, reparti
                  WHERE cod_medico = medici.id AND
@@ -131,7 +131,13 @@
          <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                <li class="nav-item">
-                  <a class="nav-link" href="../index.php">Home</a>
+                  <a class="nav-link" href="../">Home</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../visit">Visite</a>
+               </li>
+               <li class="nav-item active">
+                  <a class="nav-link" href="index.php">Pazienti</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="../../logout.php">Logout</a>
