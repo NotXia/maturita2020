@@ -206,8 +206,6 @@
 
    <script type="text/javascript">
       $(document).on("click", ".click-confirm", function () {
-         var id = $(this).data('id');
-
          $('#confirm').modal('show');
       });
 

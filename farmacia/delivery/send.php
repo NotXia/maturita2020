@@ -235,7 +235,7 @@
                         </script>
                         <?php
                      } catch (PDOException $e) {
-                        $conn->commit();
+                        $conn->rollBack();
                         die("<br><p class='error'>Qualcosa non ha funzionato</p>");
                      }
                   }

@@ -85,57 +85,55 @@
 
                <div class="table-responsive-lg" align="center">
                   <form action="send.php" method="GET">
-                     <table class="table table-bordered" align="center">
-                        <tr style="text-align:center;">
-                           <th>Reparto</th> <th>Farmaco</th> <th>Quantità</th> <th>Data prescrizione</th>
+                     <?php
+                        try {
+                           $conn = connect();
 
-                           <?php
-                              try {
-                                 $conn = connect();
+                           $sql = "SELECT reparti.denominazione AS nome_reparto, farmaci.denominazione AS nome_farmaco,
+                                          prescrizioni.id AS id_prescrizione, prescrizioni.qta AS qta_prescrizione, qta_ritirata,
+                                          orario
+                                   FROM farmaci, prescrizioni, visite, medici, reparti
+                                   WHERE cod_farmaco = farmaci.id AND
+                                         cod_visita = visite.id AND
+                                         cod_medico = medici.id AND
+                                         cod_reparto = reparti.id AND
+                                         qta_ritirata != prescrizioni.qta
+                                    ORDER BY orario";
+                              $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
+                              $stmt->execute();
+                              $res = $stmt->fetchAll();
 
-                                 $sql = "SELECT reparti.denominazione AS nome_reparto, farmaci.denominazione AS nome_farmaco,
-                                                prescrizioni.id AS id_prescrizione, prescrizioni.qta AS qta_prescrizione, qta_ritirata,
-                                                orario
-                                         FROM farmaci, prescrizioni, visite, medici, reparti
-                                         WHERE cod_farmaco = farmaci.id AND
-                                               cod_visita = visite.id AND
-                                               cod_medico = medici.id AND
-                                               cod_reparto = reparti.id AND
-                                               qta_ritirata != prescrizioni.qta
-                                          ORDER BY orario";
-                                    $stmt = $conn->prepare($sql);
-                                    $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
-                                    $stmt->execute();
-                                    $res = $stmt->fetchAll();
+                              if(!empty($res)) {
+                                 echo "<table class='table table-bordered' align='center'>
+                                       <tr style='text-align:center;'>
+                                       <th>Reparto</th> <th>Farmaco</th> <th>Quantità</th> <th>Data prescrizione</th>";
+                                 foreach($res as $row) {
+                                    $id_prescrizione = htmlentities($row["id_prescrizione"]);
+                                    $reparto = htmlentities($row["nome_reparto"]);
+                                    $farmaco = htmlentities($row["nome_farmaco"]);
+                                    $qta = htmlentities($row["qta_prescrizione"]);
+                                    $qta_ritirata = htmlentities($row["qta_ritirata"]);
+                                    $orario = date("d/m/Y H:i", strtotime($row["orario"]));
 
-                                    if(!empty($res)) {
-                                       foreach($res as $row) {
-                                          $id_prescrizione = htmlentities($row["id_prescrizione"]);
-                                          $reparto = htmlentities($row["nome_reparto"]);
-                                          $farmaco = htmlentities($row["nome_farmaco"]);
-                                          $qta = htmlentities($row["qta_prescrizione"]);
-                                          $qta_ritirata = htmlentities($row["qta_ritirata"]);
-                                          $orario = date("d/m/Y H:i", strtotime($row["orario"]));
-
-                                          echo "<tr class='text-center'>
-                                                   <td>$reparto</td>
-                                                   <td>$farmaco</td>
-                                                   <td>$qta_ritirata / $qta</td>
-                                                   <td>$orario</td>
-                                                   <td><button type='submit' name='id_prescrizione' value='$id_prescrizione' class='btn btn-outline-primary btn-sm'>Gestisci</button></td>
-                                                </tr>";
-                                       }
-                                    }
-                                    else {
-                                       die("<p>Non ci sono farmaci da consegnare</p>");
-                                    }
-                              } catch (PDOException $e) {
-                                 die("<p class='error'>Qualcosa non ha funzionato</p>");
+                                    echo "<tr class='text-center'>
+                                             <td>$reparto</td>
+                                             <td>$farmaco</td>
+                                             <td>$qta_ritirata / $qta</td>
+                                             <td>$orario</td>
+                                             <td><button type='submit' name='id_prescrizione' value='$id_prescrizione' class='btn btn-outline-primary btn-sm'>Gestisci</button></td>
+                                          </tr>";
+                                 }
+                                 echo "</tr>
+                                       </table>";
                               }
-                           ?>
-
-                        </tr>
-                     </table>
+                              else {
+                                 die("<p>Non ci sono farmaci da consegnare</p>");
+                              }
+                        } catch (PDOException $e) {
+                           die("<p class='error'>Qualcosa non ha funzionato</p>");
+                        }
+                     ?>
                   </form>
                </div>
             </div>
