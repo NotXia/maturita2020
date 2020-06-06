@@ -105,7 +105,8 @@
 
                               $sql = "SELECT COUNT(*) AS num
                                       FROM ricoveri
-                                      WHERE cod_medico = :cod_medico";
+                                      WHERE cod_medico = :cod_medico AND
+                                            data_fine IS NULL";
                               $stmt = $conn->prepare($sql);
                               $stmt->bindParam(":cod_medico", $row["id_medico"], PDO::PARAM_INT);
                               $stmt->execute();

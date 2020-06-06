@@ -49,10 +49,10 @@ CREATE TABLE ricoveri (
    data_inizio DATETIME NOT NULL,
    data_fine DATETIME DEFAULT NULL,
    motivo VARCHAR(500),
-   cod_medico INT NOT NULL,
+   cod_medico INT,
    cod_paziente VARCHAR(16) NOT NULL,
    cod_posto INT,
-   FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+   FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE SET NULL ON UPDATE CASCADE,
    FOREIGN KEY (cod_paziente) REFERENCES pazienti(cf) ON DELETE RESTRICT ON UPDATE CASCADE,
    FOREIGN KEY (cod_posto) REFERENCES posti(id) ON DELETE SET NULL ON UPDATE CASCADE
 );

@@ -105,12 +105,13 @@
 
                         foreach($_POST["posti"] as $i=>$nome_posto) {
                            $nome_posto = trim($nome_posto);
-
-                           $sql = "INSERT posti (nome, cod_reparto) VALUES(:nome, :id_reparto)";
-                           $stmt = $conn->prepare($sql);
-                           $stmt->bindParam(":nome", $nome_posto, PDO::PARAM_STR, 100);
-                           $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);
-                           $stmt->execute();
+                           if(!empty($nome_posto)) {
+                              $sql = "INSERT posti (nome, cod_reparto) VALUES(:nome, :id_reparto)";
+                              $stmt = $conn->prepare($sql);
+                              $stmt->bindParam(":nome", $nome_posto, PDO::PARAM_STR, 100);
+                              $stmt->bindParam(":id_reparto", $id_reparto, PDO::PARAM_INT);
+                              $stmt->execute();
+                           }
                         }
 
                         $conn->commit();
