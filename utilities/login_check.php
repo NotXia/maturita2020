@@ -1,5 +1,7 @@
 <?php
 
+   require_once(dirname(__FILE__)."/config.php");
+
    if(!isset($_SESSION)) {
       session_start();
    }
@@ -13,7 +15,7 @@
    }
 
    function isFarmacista() : bool {
-      return $_SESSION["reparto"] == 1;
+      return $_SESSION["reparto"] == ID_FARMACIA;
    }
 
  ?>

@@ -25,6 +25,7 @@
    }
 
    require_once(dirname(__FILE__)."/../../utilities/database.php");
+   require_once(dirname(__FILE__)."/../../utilities/anagrafica_paziente.php");
 
    try {
       $conn = connect();
@@ -90,8 +91,8 @@
                         <img class="navbar-brand user_nav_logo" src="../../img/hospital.png">
                      </td>
                      <td>
-                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?></h5>
-                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h6>
+                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo htmlentities($_SESSION["reparto_nome"]); ?></h5>
+                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo htmlentities($_SESSION["cognome"]); ?> <?php if(!empty($_SESSION["nome"])) echo htmlentities($_SESSION["nome"]); ?></h6>
                      </td>
                   </tr>
                </table>
@@ -125,69 +126,9 @@
             <div class="col-xl-7 col-lg-8 col-md-10 col-sm-12 mx-auto text-center p-4">
                <h1 class="display-4 py-2">Visita</h1>
 
-               <div class="border border-secondary rounded p-3">
-                  <h5>Dati paziente</h5>
-                  <div class="table-responsive" >
-                     <table align="center">
-                        <?php
-                           try {
-                              $conn = connect();
-                              $sql = "SELECT pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente, ddn, sesso, email, telefono,
-                                             data_inizio, motivo, posti.nome AS nome_posto,
-                                             medici.nome AS nome_medico, medici.cognome AS cognome_medico
-                                      FROM pazienti, ricoveri, posti, medici
-                                      WHERE cod_paziente = pazienti.cf AND
-                                            cod_posto = posti.id AND
-                                            cod_medico = medici.id AND
-                                            ricoveri.id = :id_ricovero";
-                              $stmt = $conn->prepare($sql);
-                              $stmt->bindParam(":id_ricovero", $_POST["id_ricovero"], PDO::PARAM_INT);
-                              $stmt->execute();
-                              $res = $stmt->fetch();
-
-                              if(!empty($res)) {
-                                 $nome = $res["nome_paziente"];
-                                 $cognome = $res["cognome_paziente"];
-                                 $ddn = date("d/m/Y", strtotime($res["ddn"]));
-                                 $sesso = $res["sesso"];
-                                 $email = $res["email"];
-                                 $telefono = $res["telefono"];
-                                 $data_inizio = date("d/m/Y H:i", strtotime($res["data_inizio"]));
-                                 $nominaivo_medico = $res["cognome_medico"] . " " . $res["nome_medico"];
-                                 $posto = $res["nome_posto"];
-                                 $motivo = $res["motivo"];
-
-                                 echo "<tr>
-                                          <td class='anagrafica'><b>Nome</b><br>$nome</td>
-                                          <td class='anagrafica'><b>Cognome</b><br>$cognome</td>
-                                          <td class='anagrafica'><b>Sesso</b><br>$sesso</td>
-                                       </tr>
-                                       <tr>
-                                          <td class='anagrafica'><b>Data di nascita</b><br>$ddn</td>
-                                          <td class='anagrafica'><b>Email</b><br>$email</td>
-                                          <td class='anagrafica'><b>Telefono</b><br>$telefono</td>
-                                       </tr>
-                                       <tr>
-                                          <td class='anagrafica'><b>Data ricovero</b><br>$data_inizio</td>
-                                          <td class='anagrafica'><b>Stanza</b><br>$posto</td>
-                                          <td class='anagrafica'><b>Medico</b><br>$nominaivo_medico</td>
-                                       </tr>
-                                       <tr>
-                                          <td colspan='3'><b>Motivo</b><br>$motivo</td>
-                                       </tr>";
-                              }
-                              else {
-                                 die("<br><span class='error'>Non è stato possibile trovare i dati del paziente</span>");
-                              }
-
-                           } catch (PDOException $e) {
-                              $conn = null;
-                              die("<br><span class='error'>Qualcosa non ha funzionato</span>");
-                           }
-                        ?>
-                     </table>
-                  </div>
-               </div>
+               <?php
+                  anagrafica($_POST["id_ricovero"], 0);
+               ?>
 
             </div>
          </div>
@@ -200,26 +141,26 @@
                   <h3>Misurazioni</h3>
                   <div class="form-group">
                      <label for="pressione">Pressione (mmHg)</label><br>
-                     <input id="pressione" name="pressione" type="number" step="0.1">
+                     <input id="pressione" name="pressione" type="number" value="<?php if(!empty($_POST["pressione"])) echo htmlentities($_POST["pressione"]); ?>" step="0.1">
                   </div>
 
                   <div class="form-group">
                      <label for="temperatura">Temperatura (°C)</label><br>
-                     <input id="temperatura" name="temperatura" type="number" step="0.1">
+                     <input id="temperatura" name="temperatura" type="number" value="<?php if(!empty($_POST["temperatura"])) echo htmlentities($_POST["temperatura"]); ?>" step="0.1">
                   </div>
 
                   <div class="form-group">
                      <label for="saturazione">Saturazione (%)</label><br>
-                     <input id="saturazione" name="saturazione" type="number" step="0.1">
+                     <input id="saturazione" name="saturazione" type="number" value="<?php if(!empty($_POST["saturazione"])) echo htmlentities($_POST["saturazione"]); ?>" step="0.1">
                   </div>
 
                   <div class="form-group">
                      <label for="battito">Battito (bpm)</label><br>
-                     <input id="battito" name="battito" type="number">
+                     <input id="battito" name="battito" type="number" value="<?php if(!empty($_POST["battito"])) echo htmlentities($_POST["battito"]); ?>">
                   </div>
 
                   <div class="form-group">
-                     <textarea name="note" rows="8" cols="30" placeholder="Note"></textarea>
+                     <textarea name="note" rows="8" cols="30" placeholder="Note" value="<?php if(!empty($_POST["note"])) echo htmlentities($_POST["note"]); ?>"></textarea>
                   </div>
                   <br>
 
@@ -283,8 +224,8 @@
                $farmaci = "";
                $id_farmaci = "";
                foreach($res as $row) {
-                  $id = $row["id"];
-                  $nome = $row["denominazione"];
+                  $id = htmlentities($row["id"]);
+                  $nome = htmlentities($row["denominazione"]);
                   $farmaci = $farmaci . "'$nome',";
                   $id_farmaci = $id_farmaci . "'$id',";
                }

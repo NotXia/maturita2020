@@ -63,8 +63,8 @@
                         <img class="navbar-brand user_nav_logo" src="../../img/hospital.png">
                      </td>
                      <td>
-                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?></h5>
-                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h6>
+                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo htmlentities($_SESSION["reparto_nome"]); ?></h5>
+                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo htmlentities($_SESSION["cognome"]); ?> <?php if(!empty($_SESSION["nome"])) echo htmlentities($_SESSION["nome"]); ?></h6>
                      </td>
                   </tr>
                </table>
@@ -126,11 +126,11 @@
                               $res = $stmt->fetchAll();
 
                               foreach($res as $row) {
-                                 $id_ricovero = $row["id_ricovero"];
-                                 $cognome = $row["cognome_paziente"];
-                                 $nome = $row["nome_paziente"];
-                                 $posto = $row["nome_posto"];
-                                 $nominativo_medico = $row["cognome_medico"] . " " . $row["nome_medico"];
+                                 $id_ricovero = htmlentities($row["id_ricovero"]);
+                                 $cognome = htmlentities($row["cognome_paziente"]);
+                                 $nome = htmlentities($row["nome_paziente"]);
+                                 $posto = htmlentities($row["nome_posto"]);
+                                 $nominativo_medico = htmlentities($row["cognome_medico"] . " " . $row["nome_medico"]);
                                  $data = date("d/m/Y H:i", strtotime($row["data_inizio"]));
 
                                  $me = "";

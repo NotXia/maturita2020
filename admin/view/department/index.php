@@ -79,8 +79,8 @@
                            $res = $stmt->fetchAll();
 
                            foreach ($res as $row) {
-                              $id_reparto = $row["id"];
-                              $denom = $row["denominazione"];
+                              $id_reparto = htmlentities($row["id"]);
+                              $denom = htmlentities($row["denominazione"]);
 
                               $sql = "SELECT id, nome
                                       FROM posti
@@ -92,7 +92,7 @@
                               $posti_tot = count($res_posti);
                               $posti = "";
                               foreach ($res_posti as $row) {
-                                 $posti = $posti . ":" . $row["id"] . ";" . $row["nome"];
+                                 $posti = $posti . ":" . htmlentities($row["id"]) . ";" . htmlentities($row["nome"]);
                               }
 
                               // Estrae i posti occupati
@@ -114,7 +114,7 @@
                               $res_posti_occupati = $stmt->fetchAll();
                               $posti_occupati = "";
                               foreach ($res_posti_occupati as $row) {
-                                 $posti_occupati = $posti_occupati . ":" . $row["id"];
+                                 $posti_occupati = $posti_occupati . ":" . htmlentities($row["id"]);
                               }
 
                               // Estrazione dei medici del reparto
@@ -128,7 +128,7 @@
                               $res_doc = $stmt->fetchAll();
                               $medici = "";
                               foreach($res_doc as $row_d) {
-                                 $medici = $medici . $row_d["cognome"] . " " . $row_d["nome"] . "<br>";
+                                 $medici = $medici . htmlentities($row_d["cognome"] . " " . $row_d["nome"]) . "<br>";
                               }
 
                               $del = "";

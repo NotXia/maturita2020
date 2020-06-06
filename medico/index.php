@@ -56,8 +56,8 @@
                         <img class="navbar-brand user_nav_logo" src="../img/hospital.png">
                      </td>
                      <td>
-                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?></h5>
-                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h6>
+                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo htmlentities($_SESSION["reparto_nome"]); ?></h5>
+                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo htmlentities($_SESSION["cognome"]); ?> <?php if(!empty($_SESSION["nome"])) echo htmlentities($_SESSION["nome"]); ?></h6>
                      </td>
                   </tr>
                </table>
@@ -97,7 +97,7 @@
                   <?php
                      try {
                         $conn = connect();
-                        $sql = "SELECT ricoveri.id AS id_ricovero, pazienti.nome AS nome_paziente, pazienti.cognome, pazienti.cf, posti.nome AS nome_posto
+                        $sql = "SELECT ricoveri.id AS id_ricovero, pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente, pazienti.cf, posti.nome AS nome_posto
                                 FROM ricoveri, pazienti, posti
                                 WHERE cod_paziente = pazienti.cf AND
                                       cod_posto = posti.id AND
@@ -116,13 +116,12 @@
                            $zero_visite = true;
                            foreach($res as $row) {
                               $zero_visite = false;
-                              $id = $row["id_ricovero"];
-                              $cf = $row["cf"];
-                              $nome = $row["nome_paziente"];
-                              $cognome = $row["cognome"];
-                              $posto = $row["nome_posto"];
+                              $id = htmlentities($row["id_ricovero"]);
+                              $cf = htmlentities($row["cf"]);
+                              $paziente = htmlentities($row["cognome_paziente"] . " " . $row["nome_paziente"]);
+                              $posto = htmlentities($row["nome_posto"]);
                               echo "<button type='submit' style='margin: 5px;width:100%' class='btn btn-outline-secondary' value='$id' name='id_ricovero'>
-                                       <span class='float-left'>$cognome $nome</span> <span class='float-right'>$posto</span>
+                                       <span class='float-left'>$paziente</span> <span class='float-right'>$posto</span>
                                     </button><br>";
                            }
                            if($zero_visite) {

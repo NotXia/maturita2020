@@ -85,6 +85,7 @@
                      <?php
                         try {
                            $conn = connect();
+                           
                            $sql = "SELECT medici.id AS id_medico, cognome, nome, usr, reparti.id AS id_reparto, denominazione
                                    FROM medici, utenze, reparti
                                    WHERE cod_utenza = utenze.id AND
@@ -95,12 +96,12 @@
                            $res = $stmt->fetchAll();
 
                            foreach ($res as $row) {
-                              $id_medico = $row["id_medico"];
-                              $nome = $row["nome"];
-                              $cognome = $row["cognome"];
-                              $username = $row["usr"];
-                              $reparto = $row["denominazione"];
-                              $id_reparto = $row["id_reparto"];
+                              $id_medico = htmlentities($row["id_medico"]);
+                              $nome = htmlentities($row["nome"]);
+                              $cognome = htmlentities($row["cognome"]);
+                              $username = htmlentities($row["usr"]);
+                              $reparto = htmlentities($row["denominazione"]);
+                              $id_reparto = htmlentities($row["id_reparto"]);
 
                               $sql = "SELECT COUNT(*) AS num
                                       FROM ricoveri

@@ -110,11 +110,11 @@
 
                                     if(!empty($res)) {
                                        foreach($res as $row) {
-                                          $id_prescrizione = $row["id_prescrizione"];
-                                          $reparto = $row["nome_reparto"];
-                                          $farmaco = $row["nome_farmaco"];
-                                          $qta = $row["qta_prescrizione"];
-                                          $qta_ritirata = $row["qta_ritirata"];
+                                          $id_prescrizione = htmlentities($row["id_prescrizione"]);
+                                          $reparto = htmlentities($row["nome_reparto"]);
+                                          $farmaco = htmlentities($row["nome_farmaco"]);
+                                          $qta = htmlentities($row["qta_prescrizione"]);
+                                          $qta_ritirata = htmlentities($row["qta_ritirata"]);
                                           $orario = date("d/m/Y H:i", strtotime($row["orario"]));
 
                                           echo "<tr class='text-center'>

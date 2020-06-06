@@ -81,17 +81,17 @@
                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                   <div class="form-group">
                      <label for="nome">Nome</label><br>
-                     <input id="nome" name="nome" type="text" value="<?php if(!empty($_POST['nome'])) echo $_POST['nome']; ?>" maxlength="100" required>
+                     <input id="nome" name="nome" type="text" value="<?php if(!empty($_POST['nome'])) echo htmlentities($_POST['nome']); ?>" maxlength="100" required>
                   </div>
 
                   <div class="form-group">
                      <label for="cognome">Cognome</label><br>
-                     <input id="cognome" name="cognome" type="text" value="<?php if(!empty($_POST['cognome'])) echo $_POST['cognome']; ?>" maxlength="100" required>
+                     <input id="cognome" name="cognome" type="text" value="<?php if(!empty($_POST['cognome'])) echo htmlentities($_POST['cognome']); ?>" maxlength="100" required>
                   </div>
 
                   <div class="form-group">
                      <label for="username">Username</label><br>
-                     <input id="username" name="username" type="text" value="<?php if(!empty($_POST['username'])) echo $_POST['username']; ?>" maxlength="100" required>
+                     <input id="username" name="username" type="text" value="<?php if(!empty($_POST['username'])) echo htmlentities($_POST['username']); ?>" maxlength="100" required>
                   </div>
 
                   <div class="form-group">

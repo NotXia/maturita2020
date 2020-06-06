@@ -66,7 +66,7 @@
                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                   <div class="form-group">
                      <label for="denominazione">Denominazione</label><br>
-                     <input id="denominazione" name="denom" type="text" value="<?php if(!empty($_POST['denom'])) echo $_POST['denom']; ?>" maxlength="100" required>
+                     <input id="denominazione" name="denom" type="text" value="<?php if(!empty($_POST['denom'])) echo htmlentities($_POST['denom']); ?>" maxlength="100" required>
                   </div>
 
                   <div class="form-group">

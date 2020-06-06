@@ -123,8 +123,8 @@
                         <img class="navbar-brand user_nav_logo" src="../../img/hospital.png">
                      </td>
                      <td>
-                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo $_SESSION["reparto_nome"]; ?></h5>
-                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo $_SESSION["cognome"]; ?> <?php if(!empty($_SESSION["nome"])) echo $_SESSION["nome"]; ?></h6>
+                        <h5 style="text-transform: uppercase;margin:0;"><?php if(!empty($_SESSION["reparto_nome"])) echo htmlentities($_SESSION["reparto_nome"]); ?></h5>
+                        <h6 style="margin:0;"><?php if(!empty($_SESSION["cognome"])) echo htmlentities($_SESSION["cognome"]); ?> <?php if(!empty($_SESSION["nome"])) echo htmlentities($_SESSION["nome"]); ?></h6>
                      </td>
                   </tr>
                </table>
@@ -170,7 +170,7 @@
                   <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                      <div class="form-group">
                         <label for="cf">Codice fiscale</label><br>
-                        <input id="cf" name="cf" type="text" value="<?php if(!empty($_POST['cf'])) echo $_POST['cf']; ?>" maxlength="16" required>
+                        <input id="cf" name="cf" type="text" value="<?php if(!empty($_POST['cf'])) echo htmlentities($_POST['cf']); ?>" maxlength="16" required>
                      </div>
 
                      <div class="form-group">
@@ -183,18 +183,18 @@
                   <h3>Dati del paziente</h3>
                   <p>Il codice fiscale non è presente nell'anagrafica, registra il nuovo paziente</p>
                   <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                     <input type="hidden" name="cf" value="<?php if(!empty($_POST['cf'])) echo $_POST['cf']; ?>">
+                     <input type="hidden" name="cf" value="<?php if(!empty($_POST['cf'])) echo htmlentities($_POST['cf']); ?>">
                      <div class="form-group">
                         <label for="nome">Nome</label><br>
-                        <input id="nome" name="nome" type="text" value="<?php if(!empty($_POST['nome'])) echo $_POST['nome']; ?>" maxlength="100" required>
+                        <input id="nome" name="nome" type="text" value="<?php if(!empty($_POST['nome'])) echo htmlentities($_POST['nome']); ?>" maxlength="100" required>
                      </div>
                      <div class="form-group">
                         <label for="cognome">Cognome</label><br>
-                        <input id="cognome" name="cognome" type="text" value="<?php if(!empty($_POST['cognome'])) echo $_POST['cognome']; ?>" maxlength="100" required>
+                        <input id="cognome" name="cognome" type="text" value="<?php if(!empty($_POST['cognome'])) echo htmlentities($_POST['cognome']); ?>" maxlength="100" required>
                      </div>
                      <div class="form-group">
                         <label for="ddn">Data di nascita</label><br>
-                        <input id="ddn" name="ddn" type="date" max="<?php echo htmlentities(date("Y-m-d")); ?>" value="<?php if(!empty($_POST['ddn'])) echo $_POST['ddn']; ?>" required>
+                        <input id="ddn" name="ddn" type="date" max="<?php echo date("Y-m-d"); ?>" value="<?php if(!empty($_POST['ddn'])) echo htmlentities($_POST['ddn']); ?>" required>
                      </div>
                      <div class="form-group">
                         <label for="sesso">Sesso</label><br>
@@ -206,11 +206,11 @@
                      </div>
                      <div class="form-group">
                         <label for="email">Email</label><br>
-                        <input id="email" name="email" type="email" value="<?php if(!empty($_POST['email'])) echo $_POST['email']; ?>" required>
+                        <input id="email" name="email" type="email" value="<?php if(!empty($_POST['email'])) echo htmlentities($_POST['email']); ?>" required>
                      </div>
                      <div class="form-group">
                         <label for="telefono">Telefono</label><br>
-                        <input id="telefono" name="telefono" type="telefono" value="<?php if(!empty($_POST['telefono'])) echo $_POST['telefono']; ?>" maxlength="20" required>
+                        <input id="telefono" name="telefono" type="telefono" value="<?php if(!empty($_POST['telefono'])) echo htmlentities($_POST['telefono']); ?>" maxlength="20" required>
                      </div>
 
                      <div class="form-group">
@@ -247,8 +247,8 @@
                                  $res = $stmt->fetchAll();
 
                                  foreach($res as $row) {
-                                    $id = $row["id"];
-                                    $nome = $row["nome"];
+                                    $id = htmlentities($row["id"]);
+                                    $nome = htmlentities($row["nome"]);
                                     echo "<option value='$id'>$nome</option>";
                                  }
 
@@ -309,8 +309,8 @@
 
             if(!empty($check_ricoveri)) {
                $id = $check_ricoveri["id_medico"];
-               $medico = strtoupper($check_ricoveri["cognome"]) . " " . strtoupper($check_ricoveri["nome"]);
-               $reparto = strtoupper($check_ricoveri["denominazione"]);
+               $medico = htmlentities(strtoupper($check_ricoveri["cognome"]) . " " . strtoupper($check_ricoveri["nome"]));
+               $reparto = htmlentities(strtoupper($check_ricoveri["denominazione"]));
                if($_SESSION["id"] == $id) {
                   die("<p class='error'>Hai già ricoverato questo paziente</p>");
                }

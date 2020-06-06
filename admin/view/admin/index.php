@@ -82,8 +82,8 @@
                            $res = $stmt->fetchAll();
 
                            foreach ($res as $row) {
-                              $id = $row["id"];
-                              $username = $row["usr"];
+                              $id = htmlentities($row["id"]);
+                              $username = htmlentities($row["usr"]);
 
                               $del = "";
                               if($id == $_SESSION["id"]) {

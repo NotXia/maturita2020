@@ -51,7 +51,7 @@
                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" required>
 
                   <div class="form-group">
-                     <input name="username" type="text" class="form-control" placeholder="username" required>
+                     <input name="username" type="text" class="form-control" value="<?php if(!empty($_POST["username"])) echo htmlentities($_POST["username"]); ?>" placeholder="username" required>
                   </div>
 
                   <div class="form-group">

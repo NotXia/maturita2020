@@ -66,7 +66,7 @@
                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                   <div class="form-group">
                      <label for="username">Username</label><br>
-                     <input id="username" name="username" type="text" value="<?php if(!empty($_POST['username'])) echo $_POST['username']; ?>" maxlength="100" required>
+                     <input id="username" name="username" type="text" value="<?php if(!empty($_POST['username'])) echo htmlentities($_POST['username']); ?>" maxlength="100" required>
                   </div>
 
                   <div class="form-group">
