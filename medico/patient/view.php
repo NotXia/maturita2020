@@ -163,9 +163,9 @@
                                              <p><b>Medico</b> $nominaivo_medico</p>";
 
                                        $sql = "SELECT posologia, prescrizioni.qta AS qta, qta_ritirata, denominazione
-                                       FROM prescrizioni, farmaci
-                                       WHERE cod_farmaco = farmaci.id AND
-                                       cod_visita = :id_visita";
+                                               FROM prescrizioni, farmaci
+                                               WHERE cod_farmaco = farmaci.id AND
+                                                     cod_visita = :id_visita";
                                        $stmt = $conn->prepare($sql);
                                        $stmt->bindParam(":id_visita", $id_visita, PDO::PARAM_INT);
                                        $stmt->execute();

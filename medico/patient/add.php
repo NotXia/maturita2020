@@ -293,7 +293,7 @@
          $conn = connect();
 
          // Controlla se il paziente esiste
-         $sql = "SELECT COUNT(*) as num
+         $sql = "SELECT COUNT(*) AS num
                  FROM pazienti
                  WHERE cf = :cf";
          $stmt = $conn->prepare($sql);
