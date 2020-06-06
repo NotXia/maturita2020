@@ -180,11 +180,11 @@
                      <button type="button" data-toggle='modal' class='btn btn-success click-confirm'>Salva</button>
                   </div>
 
-                  <div class='modal' id='confirm' tabindex='-1' role='dialog' aria-labelledby='del$id' aria-hidden='true'>
+                  <div class='modal' id='confirm' tabindex='-1' role='dialog' aria-labelledby='confirm' aria-hidden='true'>
                      <div class='modal-dialog' role='document'>
                         <div class='modal-content'>
                            <div class='modal-body'>
-                              <input id="in_id" type="hidden" name="id">
+                              <!-- <input id="in_id" type="hidden" name="id"> -->
                               <h5 style='margin:8px;'>Terminare la visita?</h5>
                            </div>
                            <div class='modal-footer'>

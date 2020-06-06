@@ -100,62 +100,85 @@
                <p>Di seguito i pazienti attualmente ricoverati nel reparto</p>
 
                <div class="table-responsive-lg" align="center">
-                  <form action="../visit/add.php" method="POST">
-                     <table class="table table-bordered">
-                        <tr style="text-align:center;">
-                           <th>Cognome</th> <th>Nome</th> <th>Stanza</th> <th>Medico</th> <th>Data ricovero</th>
-                        </tr>
+                  <table class="table table-bordered">
+                     <tr style="text-align:center;">
+                        <th>Cognome</th> <th>Nome</th> <th>Stanza</th> <th>Medico</th> <th>Data ricovero</th>
+                     </tr>
 
-                        <?php
-                           try {
-                              $conn = connect();
-                              $sql = "SELECT ricoveri.id AS id_ricovero, data_inizio,
-                                             pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente,
-                                             posti.nome AS nome_posto,
-                                             medici.id AS id_medico, medici.nome AS nome_medico, medici.cognome AS cognome_medico
-                                      FROM pazienti, ricoveri, posti, medici
-                                      WHERE cod_paziente = pazienti.cf AND
-                                            cod_posto = posti.id AND
-                                            cod_medico = medici.id AND
-                                            data_fine IS NULL AND
-                                            medici.cod_reparto = :id_reparto
-                                      ORDER BY pazienti.cognome, pazienti.nome";
-                              $stmt = $conn->prepare($sql);
-                              $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
-                              $stmt->execute();
-                              $res = $stmt->fetchAll();
+                     <?php
+                        try {
+                           $conn = connect();
+                           $sql = "SELECT ricoveri.id AS id_ricovero, data_inizio,
+                                          pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente,
+                                          posti.nome AS nome_posto,
+                                          medici.id AS id_medico, medici.nome AS nome_medico, medici.cognome AS cognome_medico
+                                   FROM pazienti, ricoveri, posti, medici
+                                   WHERE cod_paziente = pazienti.cf AND
+                                         cod_posto = posti.id AND
+                                         cod_medico = medici.id AND
+                                         data_fine IS NULL AND
+                                         medici.cod_reparto = :id_reparto
+                                   ORDER BY pazienti.cognome, pazienti.nome";
+                           $stmt = $conn->prepare($sql);
+                           $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
+                           $stmt->execute();
+                           $res = $stmt->fetchAll();
 
-                              foreach($res as $row) {
-                                 $id_ricovero = htmlentities($row["id_ricovero"]);
-                                 $cognome = htmlentities($row["cognome_paziente"]);
-                                 $nome = htmlentities($row["nome_paziente"]);
-                                 $posto = htmlentities($row["nome_posto"]);
-                                 $nominativo_medico = htmlentities($row["cognome_medico"] . " " . $row["nome_medico"]);
-                                 $data = date("d/m/Y H:i", strtotime($row["data_inizio"]));
+                           foreach($res as $row) {
+                              $id_ricovero = htmlentities($row["id_ricovero"]);
+                              $cognome = htmlentities($row["cognome_paziente"]);
+                              $nome = htmlentities($row["nome_paziente"]);
+                              $posto = htmlentities($row["nome_posto"]);
+                              $nominativo_medico = htmlentities($row["cognome_medico"] . " " . $row["nome_medico"]);
+                              $data = date("d/m/Y H:i", strtotime($row["data_inizio"]));
 
-                                 $me = "";
-                                 if($row["id_medico"] == $_SESSION["id"]) {
-                                    $me = "class='me'";
-                                 }
-
-                                 echo "<tr $me>
-                                          <td class='text-center'>$cognome</td>
-                                          <td class='text-center'>$nome</td>
-                                          <td class='text-center'>$posto</td>
-                                          <td class='text-center'>$nominativo_medico</td>
-                                          <td class='text-center'>$data</td>
-                                          <td class='text-center align-middle'><a href='view.php?id=$id_ricovero' class='btn btn-outline-primary btn-sm'>i</a></td>
-                                          <td class='text-center align-middle'><button type='submit' name='id_ricovero' value='$id_ricovero' class='btn btn-outline-primary btn-sm'>Visita</button></td>
-                                       </tr>";
+                              $me = "";
+                              if($row["id_medico"] == $_SESSION["id"]) {
+                                 $me = "class='me'";
                               }
-                           } catch (PDOException $e) {
-                              die("<p class='error'>Non è stato possibile estrarre le visite</p>");
+
+                              echo "<tr $me>
+                                       <td class='text-center'>$cognome</td>
+                                       <td class='text-center'>$nome</td>
+                                       <td class='text-center'>$posto</td>
+                                       <td class='text-center'>$nominativo_medico</td>
+                                       <td class='text-center'>$data</td>
+                                       <td class='text-center align-middle'><a href='view.php?id=$id_ricovero' class='btn btn-outline-primary btn-sm'>i</a></td>
+                                       <form action='../visit/add.php' method='POST'>
+                                          <td class='text-center align-middle'><button type='submit' name='id_ricovero' value='$id_ricovero' class='btn btn-outline-primary btn-sm'>Visita</button></td>
+                                       </form>";
+
+                              if(!empty($me)) {
+                                 echo "<td class='text-center align-middle'>
+                                          <button type='button' data-toggle='modal' data-id='$id_ricovero' class='btn btn-outline-success btn-sm click-confirm'>Dimetti</button>
+                                       </td>";
+                              }
+
+                              echo "</tr>";
                            }
-                        ?>
+                        } catch (PDOException $e) {
+                           die("<p class='error'>Non è stato possibile estrarre le visite</p>");
+                        }
+                     ?>
 
-                     </table>
+                  </table>
+               </div>
 
-                  </form>
+               <div class='modal' id='confirm' tabindex='-1' role='dialog' aria-labelledby='confirm' aria-hidden='true'>
+                  <div class='modal-dialog' role='document'>
+                     <div class='modal-content'>
+                        <form action="./dimetti.php" method="POST">
+                           <div class='modal-body'>
+                              <input id="in_id" type="hidden" name="id">
+                              <h5 style='margin:8px;'>Confermi la dimissione del paziente?</h5>
+                           </div>
+                           <div class='modal-footer'>
+                              <a class='btn btn-secondary' style='color:white;' data-dismiss='modal'>No</a>
+                              <input class='btn btn-success' style='color:white;' type="submit" name="submit" value="Si">
+                           </div>
+                        </form>
+                     </div>
+                  </div>
                </div>
 
             </div>
@@ -163,4 +186,14 @@
       </div>
 
    </body>
+
+   <script type="text/javascript">
+      $(document).on("click", ".click-confirm", function () {
+         var id = $(this).data('id');
+         document.getElementById("in_id").value = id;
+
+         $('#confirm').modal('show');
+      });
+   </script>
+
 </html>
