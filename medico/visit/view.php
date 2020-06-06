@@ -12,6 +12,12 @@
       exit;
    }
 
+   // Verifica che non sia un farmacista
+   if(isFarmacista()) {
+      header("Location: ../../farmacia");
+      exit;
+   }
+
    if(empty($_GET["id"])) {
       header("Location: ../index.php");
       exit;

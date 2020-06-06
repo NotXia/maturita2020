@@ -12,6 +12,12 @@
       exit;
    }
 
+   // Verifica che non sia un farmacista
+   if(isFarmacista()) {
+      header("Location: ../../farmacia");
+      exit;
+   }
+
    require_once(dirname(__FILE__)."/../../utilities/database.php");
 ?>
 
@@ -28,7 +34,7 @@
       <script src="../../js/popper.min.js"></script>
       <script src="../../js/bootstrap.min.js"></script>
 
-      <title>Visita</title>
+      <title>Pazienti</title>
 
       <style media="screen">
          .anagrafica {

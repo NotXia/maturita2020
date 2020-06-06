@@ -13,6 +13,12 @@
       exit;
    }
 
+   // Verifica che non sia un farmacista
+   if(isFarmacista()) {
+      header("Location: ../../farmacia");
+      exit;
+   }
+
    require_once(dirname(__FILE__)."/../../utilities/database.php");
 
 

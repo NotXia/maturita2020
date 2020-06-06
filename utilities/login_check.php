@@ -12,4 +12,8 @@
       return !empty($_SESSION["id"]) && $_SESSION["admin"]==1;
    }
 
+   function isFarmacista() : bool {
+      return $_SESSION["reparto"] == 1;
+   }
+
  ?>

@@ -12,6 +12,12 @@
       exit;
    }
 
+   // Verifica che non sia un farmacista
+   if(isFarmacista()) {
+      header("Location: ../../farmacia");
+      exit;
+   }
+
    if(empty($_GET["id"])) {
       header("Location: ../index.php");
       exit;
@@ -56,7 +62,7 @@
       <script src="../../js/popper.min.js"></script>
       <script src="../../js/bootstrap.min.js"></script>
 
-      <title>Visita</title>
+      <title>Paziente</title>
 
       <style media="screen">
          .anagrafica {

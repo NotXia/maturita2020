@@ -12,6 +12,12 @@
       exit;
    }
 
+   // Verifica che non sia un farmacista
+   if(isFarmacista()) {
+      header("Location: ../../farmacia");
+      exit;
+   }
+
    require_once(dirname(__FILE__)."/../../utilities/database.php");
 ?>
 
@@ -28,7 +34,7 @@
       <script src="../../js/popper.min.js"></script>
       <script src="../../js/bootstrap.min.js"></script>
 
-      <title>Visita</title>
+      <title>Visite</title>
 
       <style media="screen">
          .anagrafica {
@@ -136,7 +142,7 @@
                                           <td class='text-center'>$data</td>
                                           <td class='text-center'>$nominativo_paziente</td>
                                           <td class='text-center'>$posto</td>
-                                          <td class='text-center'>$nominativo_medico</td> 
+                                          <td class='text-center'>$nominativo_medico</td>
                                           <td class='text-center'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
                                        </tr>";
                               }
