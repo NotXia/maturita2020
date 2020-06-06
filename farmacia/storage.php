@@ -94,7 +94,6 @@
 
                               $sql = "SELECT farmaci.id AS id_farmaco, denominazione, descrizione, farmaci.qta AS qta_farmaco
                                       FROM farmaci
-                                      GROUP BY farmaci.id
                                       ORDER BY denominazione";
                               $stmt = $conn->prepare($sql);
                               $stmt->execute();
@@ -112,9 +111,7 @@
                                             WHERE cod_visita = visite.id AND
                                                   cod_ricovero = ricoveri.id AND
                                                   data_fine IS NULL AND
-                                                  cod_farmaco = :id_farmaco;
-                                            GROUP BY farmaci.id
-                                            ORDER BY denominazione";
+                                                  cod_farmaco = :id_farmaco";
                                     $stmt = $conn->prepare($sql);
                                     $stmt->bindParam(":id_farmaco", $id_farmaco, PDO::PARAM_STR);
                                     $stmt->execute();

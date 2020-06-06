@@ -101,7 +101,7 @@
 
                      if($stmt->fetch()["num"] == 0) {
                         $sql = "DELETE FROM posti
-                        WHERE id = :id";
+                                WHERE id = :id";
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
                         $stmt->execute();
