@@ -34,8 +34,11 @@
 
       // Verifica se la la prescrizione è stata già consegnata
       $sql = "SELECT qta, qta_ritirata
-              FROM prescrizioni
-              WHERE id = :id_prescrizione";
+              FROM prescrizioni, visite, ricoveri
+              WHERE cod_visita = visite.id AND
+                    cod_ricovero = ricoveri.id AND
+                    prescrizioni.id = :id_prescrizione AND
+                    data_fine IS NULL";
       $stmt = $conn->prepare($sql);
       $stmt->bindParam(":id_prescrizione", $id_prescrizione, PDO::PARAM_INT);
       $stmt->execute();

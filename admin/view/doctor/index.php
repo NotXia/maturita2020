@@ -25,7 +25,7 @@
       <script src="../../../js/popper.min.js"></script>
       <script src="../../../js/bootstrap.min.js"></script>
 
-      <title>Visualizza reparti</title>
+      <title>Visualizza dottori</title>
 
       <style>
          .scrollable {
@@ -85,7 +85,7 @@
                      <?php
                         try {
                            $conn = connect();
-                           
+
                            $sql = "SELECT medici.id AS id_medico, cognome, nome, usr, reparti.id AS id_reparto, denominazione
                                    FROM medici, utenze, reparti
                                    WHERE cod_utenza = utenze.id AND

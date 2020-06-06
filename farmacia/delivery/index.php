@@ -92,12 +92,14 @@
                            $sql = "SELECT reparti.denominazione AS nome_reparto, farmaci.denominazione AS nome_farmaco,
                                           prescrizioni.id AS id_prescrizione, prescrizioni.qta AS qta_prescrizione, qta_ritirata,
                                           orario
-                                   FROM farmaci, prescrizioni, visite, medici, reparti
+                                   FROM farmaci, prescrizioni, visite, medici, reparti, ricoveri
                                    WHERE cod_farmaco = farmaci.id AND
                                          cod_visita = visite.id AND
-                                         cod_medico = medici.id AND
+                                         visite.cod_medico = medici.id AND
                                          cod_reparto = reparti.id AND
-                                         qta_ritirata != prescrizioni.qta
+                                         cod_ricovero = ricoveri.id AND
+                                         qta_ritirata != prescrizioni.qta AND
+                                         data_fine IS NULL
                                     ORDER BY orario";
                               $stmt = $conn->prepare($sql);
                               $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);

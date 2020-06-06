@@ -1,7 +1,7 @@
 function autocomplete(input, arr) {
 
    var currentFocus;
-   
+
    input.addEventListener("input", function(e) {
       var val = this.value;
 
@@ -24,7 +24,7 @@ function autocomplete(input, arr) {
             var pos = str_search.indexOf(val_search);
 
             row = document.createElement("div");
-            row.innerHTML = arr[i].substr(0, pos-1);
+            row.innerHTML = arr[i].substr(0, pos);
             row.innerHTML += "<b>" + arr[i].substr(pos, val_search.length) + "</b>";
             row.innerHTML += arr[i].substr(pos + val_search.length);
 

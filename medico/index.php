@@ -106,8 +106,9 @@
                                       cod_paziente NOT IN (SELECT cod_paziente
                                                            FROM ricoveri, visite
                                                            WHERE cod_ricovero = ricoveri.id AND
-                                                                 DATE(orario) = DATE(NOW()))
-                                                           ORDER BY pazienti.cognome, pazienti.nome";
+                                                                 DATE(orario) = DATE(NOW()) AND
+                                                                 data_fine IS NULL)
+                                ORDER BY pazienti.cognome, pazienti.nome";
                            $stmt = $conn->prepare($sql);
                            $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
                            $stmt->execute();

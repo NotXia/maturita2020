@@ -91,11 +91,21 @@
                      $stmt->execute();
                   }
                   else {
-                     $sql = "DELETE FROM posti
-                             WHERE id = :id";
+                     $sql = "SELECT COUNT(*) AS num
+                             FROM ricoveri
+                             WHERE cod_posto = :id AND
+                                   data_fine IS NULL";
                      $stmt = $conn->prepare($sql);
                      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
                      $stmt->execute();
+
+                     if($stmt->fetch()["num"] == 0) {
+                        $sql = "DELETE FROM posti
+                        WHERE id = :id";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                     }
                   }
                }
             }
@@ -123,6 +133,7 @@
             <?php
          } catch (PDOException $e) {
             $conn->rollBack();
+            echo $e->getMessage();
             die("<p class='error'>Si è verificato un errore nell'aggiornamento</p>");
          }
       ?>

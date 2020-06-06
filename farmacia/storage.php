@@ -92,48 +92,58 @@
                            try {
                               $conn = connect();
 
-                              $sql = "SELECT farmaci.id AS id_farmaco, denominazione, descrizione, farmaci.qta AS qta_farmaco,
-                                             SUM(prescrizioni.qta) - SUM(qta_ritirata) AS qta_richiesta
-                                      FROM farmaci LEFT JOIN prescrizioni ON cod_farmaco = farmaci.id
+                              $sql = "SELECT farmaci.id AS id_farmaco, denominazione, descrizione, farmaci.qta AS qta_farmaco
+                                      FROM farmaci
                                       GROUP BY farmaci.id
                                       ORDER BY denominazione";
-                                 $stmt = $conn->prepare($sql);
-                                 $stmt->execute();
-                                 $res = $stmt->fetchAll();
+                              $stmt = $conn->prepare($sql);
+                              $stmt->execute();
+                              $res = $stmt->fetchAll();
 
-                                 if(!empty($res)) {
-                                    foreach($res as $row) {
-                                       $id_farmaco = htmlentities($row["id_farmaco"]);
-                                       $nome = htmlentities($row["denominazione"]);
-                                       $descrizione = nl2br(htmlentities($row["descrizione"]));
-                                       $qta_farmaco = htmlentities($row["qta_farmaco"]);
-                                       $qta_richiesta = htmlentities($row["qta_richiesta"]);
+                              if(!empty($res)) {
+                                 foreach($res as $row) {
+                                    $id_farmaco = htmlentities($row["id_farmaco"]);
+                                    $nome = htmlentities($row["denominazione"]);
+                                    $descrizione = nl2br(htmlentities($row["descrizione"]));
+                                    $qta_farmaco = htmlentities($row["qta_farmaco"]);
 
-                                       if(empty($qta_richiesta)) {
-                                          $qta_richiesta = 0;
-                                       }
+                                    $sql = "SELECT SUM(qta) - SUM(qta_ritirata) AS qta_richiesta
+                                            FROM prescrizioni, visite, ricoveri
+                                            WHERE cod_visita = visite.id AND
+                                                  cod_ricovero = ricoveri.id AND
+                                                  data_fine IS NULL AND
+                                                  cod_farmaco = :id_farmaco;
+                                            GROUP BY farmaci.id
+                                            ORDER BY denominazione";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bindParam(":id_farmaco", $id_farmaco, PDO::PARAM_STR);
+                                    $stmt->execute();
 
-                                       $warning = "";
-                                       if($qta_farmaco == 0) {
-                                          $warning = "style='color: #ff8200; font-weight: bold;'";
-                                       }
-                                       if($qta_farmaco < $qta_richiesta) {
-                                          $warning = "style='color: #ff0000; font-weight: bold; text-decoration: underline'";
-                                       }
+                                    $qta_richiesta = htmlentities($stmt->fetch()["qta_richiesta"]);
 
-                                       echo "<tr class='text-center' $warning>
-                                                <td class='align-middle'>$nome</td>
-                                                <td class='align-middle text-left'>$descrizione</td>
-                                                <td class='align-middle'>$qta_farmaco</td>
-                                                <td class='align-middle'>$qta_richiesta</td>
-                                                <td class='align-middle'><button type='button' data-toggle='modal' data-id='$id_farmaco' data-qta='$qta_farmaco' class='btn btn-outline-secondary btn-sm click-modify'>Modifica</button></td>
-                                             </tr>";
+                                    if(empty($qta_richiesta)) {
+                                       $qta_richiesta = 0;
                                     }
+
+                                    $warning = "";
+                                    if($qta_farmaco == 0) {
+                                       $warning = "style='color: #ff8200; font-weight: bold;'";
+                                    }
+                                    if($qta_farmaco < $qta_richiesta) {
+                                       $warning = "style='color: #ff0000; font-weight: bold; text-decoration: underline'";
+                                    }
+
+                                    echo "<tr class='text-center' $warning>
+                                             <td class='align-middle'>$nome</td>
+                                             <td class='align-middle text-left'>$descrizione</td>
+                                             <td class='align-middle'>$qta_farmaco</td>
+                                             <td class='align-middle'>$qta_richiesta</td>
+                                             <td class='align-middle'><button type='button' data-toggle='modal' data-id='$id_farmaco' data-qta='$qta_farmaco' class='btn btn-outline-secondary btn-sm click-modify'>Modifica</button></td>
+                                          </tr>";
                                  }
-                                 else {
-                                    die("<p>Non ci sono farmaci da consegnare</p>");
-                                 }
-                           } catch (PDOException $e) {
+                              }
+                           }
+                           catch (PDOException $e) {
                               die("<p class='error'>Qualcosa non ha funzionato</p>");
                            }
                         ?>

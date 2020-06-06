@@ -51,10 +51,10 @@ CREATE TABLE ricoveri (
    motivo VARCHAR(500),
    cod_medico INT NOT NULL,
    cod_paziente VARCHAR(16) NOT NULL,
-   cod_posto INT NOT NULL,
+   cod_posto INT,
    FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE RESTRICT ON UPDATE CASCADE,
    FOREIGN KEY (cod_paziente) REFERENCES pazienti(cf) ON DELETE RESTRICT ON UPDATE CASCADE,
-   FOREIGN KEY (cod_posto) REFERENCES posti(id) ON DELETE RESTRICT ON UPDATE CASCADE
+   FOREIGN KEY (cod_posto) REFERENCES posti(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE farmaci (
@@ -63,18 +63,6 @@ CREATE TABLE farmaci (
    descrizione VARCHAR(500),
    qta INT NOT NULL DEFAULT 0,
    CHECK (qta >= 0)
-);
-
-CREATE TABLE prescrizioni (
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   posologia VARCHAR(500) NOT NULL,
-   qta INT NOT NULL,
-   qta_ritirata INT NOT NULL DEFAULT 0,
-   cod_visita INT NOT NULL,
-   cod_farmaco INT NOT NULL,
-   FOREIGN KEY (cod_visita) REFERENCES visite(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-   FOREIGN KEY (cod_farmaco) REFERENCES farmaci(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-   CHECK (qta > 0 AND qta_ritirata <= qta)
 );
 
 CREATE TABLE visite (
@@ -89,6 +77,18 @@ CREATE TABLE visite (
    cod_medico INT NOT NULL,
    FOREIGN KEY (cod_ricovero) REFERENCES ricoveri(id) ON DELETE RESTRICT ON UPDATE CASCADE,
    FOREIGN KEY (cod_medico) REFERENCES medici(id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE prescrizioni (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   posologia VARCHAR(500) NOT NULL,
+   qta INT NOT NULL,
+   qta_ritirata INT NOT NULL DEFAULT 0,
+   cod_visita INT NOT NULL,
+   cod_farmaco INT NOT NULL,
+   FOREIGN KEY (cod_visita) REFERENCES visite(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+   FOREIGN KEY (cod_farmaco) REFERENCES farmaci(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+   CHECK (qta > 0 AND qta_ritirata <= qta)
 );
 
 CREATE INDEX medicinali ON farmaci(denominazione);
