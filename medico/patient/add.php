@@ -220,7 +220,7 @@
                </div>
 
                <div id="form_3" style="display:none;">
-                  <h3>Altri dati</h3><br>
+                  <h3>Dati ricovero</h3><br>
                   <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
                      <input type="hidden" name="cf" value="<?php if(!empty($_POST['cf'])) echo htmlentities($_POST['cf']); ?>">
                      <div class="form-group">
@@ -322,7 +322,6 @@
                gotoForm3();
                exit;
             }
-
          }
 
       } catch (PDOException $e) {
@@ -384,6 +383,7 @@
          exit;
 
       } catch (PDOException $e) {
+         gotoForm1();
          die("<p class='error'>Qualcosa è andato storto</p>");
       }
 
@@ -440,7 +440,6 @@
          header("Location: ../index.php");
       } catch (PDOException $e) {
          $conn->rollBack();
-         echo $e->getMessage();
          die("<p class='error'>Si è verificato un errore nell'inserimento del ricovero</p>");
       }
 

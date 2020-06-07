@@ -80,7 +80,6 @@
                </script>
             <?php
          } catch (PDOException $e) {
-            echo $e->getMessage();
             die("<p class='error'>Si è verificato un errore nella cancellazione</p>");
          }
       ?>

@@ -133,7 +133,6 @@
             <?php
          } catch (PDOException $e) {
             $conn->rollBack();
-            echo $e->getMessage();
             die("<p class='error'>Si è verificato un errore nell'aggiornamento</p>");
          }
       ?>
