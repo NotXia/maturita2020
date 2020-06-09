@@ -179,7 +179,7 @@
                         <div class='modal-header'>
                            <h5 style='margin:8px;'>Inserisci</h5>
                         </div>
-                        <form class="" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" autocomplete="off">
+                        <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" autocomplete="off">
                            <div class='modal-body text-center'>
                               <input type="text" name="denominazione" placeholder="Denominazione" required><br><br>
                               <textarea name="descrizione" placeholder="Descrizione" rows="6" cols="22"></textarea><br><br>
