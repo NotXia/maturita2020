@@ -92,6 +92,7 @@
                            try {
                               $conn = connect();
 
+                              // Estrae tutti i farmaci
                               $sql = "SELECT farmaci.id AS id_farmaco, denominazione, descrizione, farmaci.qta AS qta_farmaco
                                       FROM farmaci
                                       ORDER BY denominazione";
@@ -106,6 +107,7 @@
                                     $descrizione = nl2br(htmlentities($row["descrizione"]));
                                     $qta_farmaco = htmlentities($row["qta_farmaco"]);
 
+                                    // Estrae la quantità necessaria del farmaco
                                     $sql = "SELECT SUM(qta) - SUM(qta_ritirata) AS qta_richiesta
                                             FROM prescrizioni, visite, ricoveri
                                             WHERE cod_visita = visite.id AND

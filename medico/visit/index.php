@@ -109,6 +109,7 @@
                         <?php
                            try {
                               $conn = connect();
+                              // Estrae le visite fatte dal medico ai pazienti attualmente ricoverati
                               $sql = "SELECT visite.id AS id_visita, orario,
                                              pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente,
                                              posti.nome AS nome_posto

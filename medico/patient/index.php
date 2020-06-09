@@ -108,6 +108,7 @@
                      <?php
                         try {
                            $conn = connect();
+                           // Estrae tutti i pazienti attualmente ricoverati nel reparto
                            $sql = "SELECT ricoveri.id AS id_ricovero, data_inizio,
                                           pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente,
                                           posti.nome AS nome_posto,

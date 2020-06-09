@@ -20,8 +20,9 @@ function autocomplete(input, arr) {
       for (var i=0; i<arr.length; i++) {
          var str_search = arr[i].toUpperCase();
          var val_search = val.toUpperCase();
-         if (str_search.includes(val_search)) {
-            var pos = str_search.indexOf(val_search);
+         var pos = str_search.indexOf(val_search);
+
+         if (pos != -1) {
 
             row = document.createElement("div");
             row.innerHTML = arr[i].substr(0, pos);

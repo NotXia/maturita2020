@@ -89,6 +89,7 @@
                         try {
                            $conn = connect();
 
+                           // Estrae tutte le prescrizioni con farmaci da consegnare
                            $sql = "SELECT reparti.denominazione AS nome_reparto, farmaci.denominazione AS nome_farmaco,
                                           prescrizioni.id AS id_prescrizione, prescrizioni.qta AS qta_prescrizione, qta_ritirata,
                                           orario

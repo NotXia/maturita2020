@@ -97,6 +97,7 @@
                   <?php
                      try {
                         $conn = connect();
+                        // Estrae i pazienti del medico da visitare oggi
                         $sql = "SELECT ricoveri.id AS id_ricovero, pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente, pazienti.cf, posti.nome AS nome_posto
                                 FROM ricoveri, pazienti, posti
                                 WHERE cod_paziente = pazienti.cf AND

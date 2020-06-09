@@ -123,6 +123,7 @@
                   anagrafica($_POST["id"], 0);
 
                   try {
+                     // Estrae la durata del ricovero e il numero di visite effettuate
                      $sql = "SELECT DATEDIFF(data_fine, data_inizio) AS durata, COUNT(visite.id) AS num_visite
                              FROM ricoveri, visite
                              WHERE cod_ricovero = ricoveri.id AND
@@ -205,7 +206,7 @@
                               </tr>
                            </table>";
 
-
+                     // Estrae il resoconto dei farmaci
                      $sql = "SELECT denominazione, SUM(prescrizioni.qta) AS sum_qta, SUM(prescrizioni.qta_ritirata) AS sum_qta_ritirata
                              FROM visite, prescrizioni, farmaci
                              WHERE cod_visita = visite.id AND

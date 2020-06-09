@@ -410,6 +410,7 @@
          // Controlla che non sia già ricoverato e che ci siano posti liberi
          if(empty(controlloRicoveri($_POST["cf"])) || controlloPosti() != 0) {
 
+            // Controlla che il posto sia del reparto giusto
             $sql = "SELECT cod_reparto FROM posti WHERE id = :id_posto";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":id_posto", $_POST["posto"], PDO::PARAM_INT);

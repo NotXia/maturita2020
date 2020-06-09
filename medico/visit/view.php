@@ -135,6 +135,7 @@
                <?php
                   try {
                      $conn = connect();
+                     // Estrae i dati della visita
                      $sql = "SELECT orario, pressione, temperatura, saturazione, battito, note, nome, cognome
                              FROM visite, medici
                              WHERE cod_medico = medici.id AND
@@ -176,6 +177,7 @@
                         die("<br><span class='error'>Non è stato possibile trovare la visita</span>");
                      }
 
+                     // Estrae le prescrizioni della visita
                      $sql = "SELECT posologia, prescrizioni.qta AS qta, qta_ritirata, denominazione
                              FROM prescrizioni, farmaci
                              WHERE cod_farmaco = farmaci.id AND

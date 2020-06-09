@@ -136,6 +136,7 @@
                <?php
                   try {
                      $conn = connect();
+                     // Estrae tutte le visite fatte per un ricovero
                      $sql = "SELECT visite.id AS id_visita, orario, nome, cognome
                              FROM visite, medici
                              WHERE cod_medico = medici.id AND
@@ -162,6 +163,7 @@
                                        echo "<p class='visita'><b>Orario</b> $orario</p>
                                              <p><b>Medico</b> $nominaivo_medico</p>";
 
+                                       // Estrae i dati delle prescrizioni
                                        $sql = "SELECT posologia, prescrizioni.qta AS qta, qta_ritirata, denominazione
                                                FROM prescrizioni, farmaci
                                                WHERE cod_farmaco = farmaci.id AND

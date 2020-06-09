@@ -212,6 +212,7 @@
       index = 0;
 
          <?php
+            // Inizializza due array con i dati per la barra di ricerca
             try {
                $conn = connect();
                $sql = "SELECT id, denominazione FROM farmaci ORDER BY denominazione";
