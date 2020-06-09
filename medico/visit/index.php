@@ -111,18 +111,16 @@
                               $conn = connect();
                               $sql = "SELECT visite.id AS id_visita, orario,
                                              pazienti.nome AS nome_paziente, pazienti.cognome AS cognome_paziente,
-                                             posti.nome AS nome_posto,
-                                             medici.id AS id_medico, medici.nome AS nome_medico, medici.cognome AS cognome_medico
-                                      FROM visite, ricoveri, posti, pazienti, medici
+                                             posti.nome AS nome_posto
+                                      FROM visite, ricoveri, posti, pazienti
                                       WHERE cod_ricovero = ricoveri.id AND
                                             cod_posto = posti.id AND
                                             cod_paziente = pazienti.cf AND
-                                            visite.cod_medico = medici.id AND
                                             data_fine IS NULL AND
-                                            medici.cod_reparto = :id_reparto
+                                            visite.cod_medico = :id_medico
                                       ORDER BY orario DESC";
                               $stmt = $conn->prepare($sql);
-                              $stmt->bindParam(":id_reparto", $_SESSION["reparto"], PDO::PARAM_INT);
+                              $stmt->bindParam(":id_medico", $_SESSION["id"], PDO::PARAM_INT);
                               $stmt->execute();
                               $res = $stmt->fetchAll();
 
@@ -131,18 +129,11 @@
                                  $data = date("d/m/Y H:i", strtotime($row["orario"]));
                                  $nominativo_paziente = htmlentities($row["cognome_paziente"] . " " . $row["nome_paziente"]);
                                  $posto = htmlentities($row["nome_posto"]);
-                                 $nominativo_medico = htmlentities($row["cognome_medico"] . " " . $row["nome_medico"]);
 
-                                 $me = "";
-                                 if($row["id_medico"] == $_SESSION["id"]) {
-                                    $me = "class='me'";
-                                 }
-
-                                 echo "<tr $me>
+                                 echo "<tr>
                                           <td class='text-center'>$data</td>
                                           <td class='text-center'>$nominativo_paziente</td>
                                           <td class='text-center'>$posto</td>
-                                          <td class='text-center'>$nominativo_medico</td>
                                           <td class='text-center'><button type='submit' name='id' value='$id_visita' class='btn btn-outline-primary btn-sm'>i</button></td>
                                        </tr>";
                               }

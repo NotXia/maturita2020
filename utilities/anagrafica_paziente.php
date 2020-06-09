@@ -11,7 +11,7 @@
       <div class="border border-secondary rounded p-3">
          <h5>Dati paziente</h5>
          <div class="table-responsive" >
-            <table align="center">
+            <table align="center" style='width: 70%'>
       <?php
             try {
                $conn = connect();
@@ -61,9 +61,9 @@
                   $motivo = htmlentities($res["motivo"]);
 
                   echo "<tr>
-                           <td class='anagrafica'><b>Nome</b><br>$nome</td>
-                           <td class='anagrafica'><b>Cognome</b><br>$cognome</td>
-                           <td class='anagrafica'><b>Sesso</b><br>$sesso</td>
+                           <td class='anagrafica' style='width: 33.33%'><b>Nome</b><br>$nome</td>
+                           <td class='anagrafica' style='width: 33.33%'><b>Cognome</b><br>$cognome</td>
+                           <td class='anagrafica' style='width: 33.33%'><b>Sesso</b><br>$sesso</td>
                         </tr>
                         <tr>
                            <td class='anagrafica'><b>Data di nascita</b><br>$ddn</td>
