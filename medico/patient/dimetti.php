@@ -123,7 +123,7 @@
                   anagrafica($_POST["id"], 0);
 
                   try {
-                     $sql = "SELECT DATEDIFF(data_fine , data_inizio) AS durata, COUNT(visite.id) AS num_visite
+                     $sql = "SELECT DATEDIFF(data_fine, data_inizio) AS durata, COUNT(visite.id) AS num_visite
                              FROM ricoveri, visite
                              WHERE cod_ricovero = ricoveri.id AND
                                    ricoveri.id = :id_ricovero";
