@@ -248,20 +248,27 @@
 
          if(input_index != -1) {
             if(farmaci_selected.indexOf(farmaci[input_index]) == -1) {
-               var table = document.getElementById("in_farmaci");
+               var div = document.getElementById("in_farmaci");
+
+               var table_farmaco = document.createElement("table");
+               table_farmaco.className = "table table-bordered";
+               div.appendChild(table_farmaco);
+
+               var row_farmaco = document.createElement("tr");
+               table_farmaco.appendChild(row_farmaco);
 
                var lbl_farmaco = document.createElement("input");
                lbl_farmaco.type = "text";
                lbl_farmaco.value = farmaci[input_index];
                lbl_farmaco.className = "align-middle prescrizione";
                lbl_farmaco.disabled = true;
-               table.appendChild(lbl_farmaco);
+               row_farmaco.appendChild(lbl_farmaco);
 
                var id_farmaco = document.createElement("input");
                id_farmaco.type = "hidden";
                id_farmaco.value = id_farmaci[input_index];
                id_farmaco.name = "farmaco[" + index + "]";
-               table.appendChild(id_farmaco);
+               row_farmaco.appendChild(id_farmaco);
 
                var qta = document.createElement("input");
                qta.type = "number";
@@ -270,7 +277,7 @@
                qta.placeholder = "Quantità";
                qta.className = "align-middle prescrizione";
                qta.required = true;
-               table.appendChild(qta);
+               row_farmaco.appendChild(qta);
 
                var posologia = document.createElement("textarea");
                posologia.name = "posologia[" + index + "]";
@@ -278,10 +285,7 @@
                posologia.placeholder = "Posologia";
                posologia.className = "align-middle prescrizione";
                posologia.required = true;
-               table.appendChild(posologia);
-
-               table.appendChild(document.createElement("br"));
-               table.appendChild(document.createElement("br"));
+               row_farmaco.appendChild(posologia);
 
                index++;
                farmaci_selected.push(farmaci[input_index]);
