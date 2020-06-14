@@ -12,7 +12,7 @@
       exit;
    }
 
-   if($_SESSION["reparto"] == 1) {
+   if(isFarmacista()) {
       header("Location: ./farmacia");
       exit;
    }
