@@ -4,7 +4,7 @@ Elaborato presentato all'esame di maturità 2020.
 
 ## Demo
 ### Pagina di accesso
-xia2.altervista.org/maturita2020/elaborato/ospedale
+https://xia2.altervista.org/maturita2020/elaborato/ospedale
 #### Credenziali:
 | Username | Password |
 |:--------:|:--------:|
@@ -13,7 +13,7 @@ xia2.altervista.org/maturita2020/elaborato/ospedale
 | farmacia | 12345    |
 
 ### Pagina di accesso al pannello admin
-xia2.altervista.org/maturita2020/elaborato/ospedale/admin
+https://xia2.altervista.org/maturita2020/elaborato/ospedale/admin
 #### Credenziali:
 | Username | Password |
 |:--------:|:--------:|
